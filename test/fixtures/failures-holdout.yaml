@@ -1,0 +1,99 @@
+# Held-out corpus: written AFTER the rules were tuned on failures.yaml and never used to tune them.
+# Its accuracy is the honest estimate of real-world performance. Do not edit rules to fit this file;
+# when you add rules, move these entries into failures.yaml and write a fresh hold-out set.
+- framework: selenium-java
+  category: maintenance
+  error: "org.openqa.selenium.NoSuchElementException: Cannot locate an element using By.id: btnSubmitOrder"
+- framework: selenium-java
+  category: maintenance
+  error: "org.openqa.selenium.ElementClickInterceptedException: element click intercepted: Element <a href=\"/cart\">...</a> is not clickable at point (40, 12)"
+- framework: selenium-java
+  category: environment
+  error: "org.openqa.selenium.remote.UnreachableBrowserException: Could not start a new session. Possible causes are invalid address of the remote server or browser start-up failure."
+- framework: selenium-java
+  category: product
+  error: "org.opentest4j.AssertionFailedError: Wishlist should contain item ==> expected: <true> but was: <false>"
+- framework: selenium-python
+  category: maintenance
+  error: "selenium.common.exceptions.NoSuchElementException: Message: no such element: Unable to locate element: {\"method\":\"css selector\",\"selector\":\".btn-primary\"}"
+- framework: selenium-python
+  category: environment
+  error: "urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=4444): Max retries exceeded with url: /session (Caused by NewConnectionError: Failed to establish a new connection: [Errno 111] Connection refused)"
+- framework: pytest
+  category: product
+  error: "AssertionError: assert 'Payment Failed' == 'Order Placed'"
+- framework: pytest
+  category: product
+  error: "assert response.status_code == 201\nE   assert 400 == 201"
+- framework: pytest
+  category: environment
+  error: "requests.exceptions.ConnectionError: HTTPSConnectionPool(host='api.qa.acme.test', port=443): Max retries exceeded (Caused by NameResolutionError: Failed to resolve 'api.qa.acme.test')"
+- framework: playwright
+  category: maintenance
+  error: "locator.selectOption: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator('select#country')"
+- framework: playwright
+  category: product
+  error: "Error: expect(locator).toHaveValue(expected)\nLocator: getByLabel('Quantity')\nExpected string: \"2\"\nReceived string: \"1\""
+- framework: playwright
+  category: environment
+  error: "Error: browserContext.newPage: Target page, context or browser has been closed"
+- framework: playwright
+  category: environment
+  error: "page.goto: net::ERR_CONNECTION_RESET at https://staging.acme.test/cart"
+- framework: playwright
+  category: maintenance
+  error: "Error: locator.hover: Error: strict mode violation: getByText('Menu') resolved to 2 elements"
+- framework: cypress
+  category: maintenance
+  error: "AssertionError: Timed out retrying after 6000ms: Expected to find element: `#coupon-input`, but never found it."
+- framework: cypress
+  category: product
+  error: "AssertionError: Timed out retrying after 4000ms: expected '<div.alert>' to contain 'Saved successfully'"
+- framework: cypress
+  category: environment
+  error: "CypressError: `cy.request()` failed on:\nhttps://staging.acme.test/api/login\nThe response we received from your web server was:\n  > 504: Gateway Timeout"
+- framework: restassured
+  category: product
+  error: "java.lang.AssertionError: 1 expectation failed.\nExpected status code <200> but was <401>."
+- framework: restassured
+  category: environment
+  error: "java.net.SocketTimeoutException: connect timed out"
+- framework: restassured
+  category: product
+  error: "java.lang.AssertionError: 1 expectation failed.\nJSON path items.size() doesn't match.\nExpected: <3>\n  Actual: <0>"
+- framework: karate
+  category: product
+  error: "status code was: 500, expected: 200, response time: 412"
+- framework: karate
+  category: product
+  error: "match failed: EQUALS\n  $ | not equal (STRING:STRING)\n  'FAILED'\n  'PAID'"
+- framework: junit5
+  category: product
+  error: "org.opentest4j.AssertionFailedError: expected: <[UPI, CARD]> but was: <[CARD]>"
+- framework: junit5
+  category: environment
+  error: "org.springframework.dao.DataAccessResourceFailureException: Unable to acquire JDBC Connection"
+- framework: testng
+  category: maintenance
+  error: "org.testng.TestNGException: Cannot inject @Test annotated Method [verifyCart] with [class java.lang.String]."
+- framework: cucumber-jvm
+  category: maintenance
+  error: "io.cucumber.junit.UndefinedStepException: The step 'the user sees the refund banner' and 1 other step(s) are undefined."
+- framework: cucumber-js
+  category: environment
+  error: "Error: function timed out, ensure the promise resolves within 30000 milliseconds"
+- framework: jest
+  category: product
+  error: "expect(received).toEqual(expected)\n\nExpected: {\"currency\": \"INR\"}\nReceived: {\"currency\": \"USD\"}"
+- framework: webdriverio
+  category: maintenance
+  error: "Error: element (\"[data-test=\\\"pay-now\\\"]\") still not displayed after 10000ms"
+- framework: webdriverio
+  category: environment
+  error: "WebDriverError: Failed to create session.\nUnable to connect to \"http://localhost:4444/\", make sure browser driver is running on that address."
+- framework: ci
+  category: environment
+  error: "npm ERR! network request to https://registry.npmjs.org/playwright failed, reason: getaddrinfo EAI_AGAIN registry.npmjs.org"
+- framework: ci
+  category: environment
+  error: "The runner has received a shutdown signal. This can happen when the runner service is stopped, or a manually started runner is canceled."

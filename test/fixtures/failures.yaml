@@ -1,0 +1,774 @@
+# ShipProof classifier corpus (§9).
+# Each entry is a real-world-shaped failure message labelled by an automation engineer with the
+# category a human would assign during morning triage. `rule` is the rule we expect to fire; it is
+# checked only when present. Categories: product | maintenance | environment | unclassified.
+# The test suite fails if overall category accuracy drops below 90%.
+
+# ───────────────────────────── Selenium (Java) ─────────────────────────────
+- framework: selenium-java
+  category: maintenance
+  rule: SEL-LOCATOR
+  error: |
+    org.openqa.selenium.NoSuchElementException: no such element: Unable to locate element: {"method":"css selector","selector":"#loginBtn"}
+      (Session info: chrome=126.0.6478.127)
+    For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+    at org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:351)
+- framework: selenium-java
+  category: maintenance
+  rule: SEL-LOCATOR
+  error: "NoSuchElementException: Unable to locate element: #loginBtn"
+- framework: selenium-java
+  category: maintenance
+  rule: SEL-LOCATOR
+  error: |
+    org.openqa.selenium.NoSuchElementException: no such element: Unable to locate element: {"method":"xpath","selector":"//button[@data-test='checkout']"}
+- framework: selenium-java
+  category: maintenance
+  rule: SEL-STALE
+  error: |
+    org.openqa.selenium.StaleElementReferenceException: stale element reference: stale element not found in the current frame
+      (Session info: chrome=125.0.6422.141)
+- framework: selenium-java
+  category: maintenance
+  rule: SEL-STALE
+  error: "StaleElementReferenceException: stale element reference: element is not attached to the page document"
+- framework: selenium-java
+  category: maintenance
+  rule: SEL-NOTINTERACT
+  error: |
+    org.openqa.selenium.ElementClickInterceptedException: element click intercepted: Element <button id="submit">...</button> is not clickable at point (612, 488). Other element would receive the click: <div class="cookie-banner">...</div>
+- framework: selenium-java
+  category: maintenance
+  rule: SEL-NOTINTERACT
+  error: "org.openqa.selenium.ElementNotInteractableException: element not interactable"
+- framework: selenium-java
+  category: maintenance
+  rule: SEL-NOTINTERACT
+  error: "org.openqa.selenium.interactions.MoveTargetOutOfBoundsException: move target out of bounds"
+- framework: selenium-java
+  category: maintenance
+  rule: SEL-INVALID-SELECTOR
+  error: "org.openqa.selenium.InvalidSelectorException: invalid selector: Unable to locate an element with the xpath expression //div[@class='x' because of the following error: SyntaxError"
+- framework: selenium-java
+  category: maintenance
+  rule: SEL-FRAME-WINDOW
+  error: "org.openqa.selenium.NoSuchFrameException: No frame element found by name or id paymentFrame"
+- framework: selenium-java
+  category: maintenance
+  rule: SEL-FRAME-WINDOW
+  error: "org.openqa.selenium.NoAlertPresentException: no such alert"
+- framework: selenium-java
+  category: maintenance
+  rule: SEL-FRAME-WINDOW
+  error: "org.openqa.selenium.UnhandledAlertException: unexpected alert open: {Alert text : Session will expire}"
+- framework: selenium-java
+  category: maintenance
+  rule: SEL-WAIT-LOCATOR
+  error: |
+    org.openqa.selenium.TimeoutException: Expected condition failed: waiting for visibility of element located by By.cssSelector: .order-confirmation (tried for 20 second(s) with 500 milliseconds interval)
+- framework: selenium-java
+  category: maintenance
+  rule: SEL-WAIT-LOCATOR
+  error: "org.openqa.selenium.TimeoutException: Expected condition failed: waiting for element to be clickable: By.id: placeOrder (tried for 10 second(s) with 500 milliseconds interval)"
+- framework: selenium-java
+  category: maintenance
+  rule: SEL-WAIT-LOCATOR
+  error: "TimeoutException: Expected condition failed: waiting for presence of element located by: By.xpath: //table[@id='orders']//tr (tried for 15 second(s))"
+- framework: selenium-java
+  category: environment
+  rule: DRV-SESSION
+  error: |
+    org.openqa.selenium.SessionNotCreatedException: Could not start a new session. Response code 500. Message: session not created: This version of ChromeDriver only supports Chrome version 124
+    Current browser version is 126.0.6478.127
+- framework: selenium-java
+  category: environment
+  rule: DRV-SESSION
+  error: "org.openqa.selenium.WebDriverException: unknown error: chrome not reachable"
+- framework: selenium-java
+  category: environment
+  rule: DRV-SESSION
+  error: "org.openqa.selenium.SessionNotCreatedException: session not created: DevToolsActivePort file doesn't exist"
+- framework: selenium-java
+  category: environment
+  rule: DRV-SESSION
+  error: "org.openqa.selenium.NoSuchSessionException: invalid session id"
+- framework: selenium-java
+  category: environment
+  rule: DRV-SESSION
+  error: "org.openqa.selenium.SessionNotCreatedException: Could not start a new session. Error while creating session with the driver service. No nodes are available in Selenium Grid matching capabilities"
+- framework: selenium-java
+  category: environment
+  rule: DRV-SESSION
+  error: "org.openqa.selenium.WebDriverException: disconnected: not connected to DevTools"
+- framework: selenium-java
+  category: environment
+  rule: NET-REFUSED
+  error: "org.openqa.selenium.WebDriverException: unknown error: net::ERR_CONNECTION_REFUSED (Session info: chrome=126.0)"
+- framework: selenium-java
+  category: environment
+  rule: NET-DNS
+  error: "org.openqa.selenium.WebDriverException: unknown error: net::ERR_NAME_NOT_RESOLVED"
+- framework: selenium-java
+  category: environment
+  rule: NET-TIMEOUT
+  error: "org.openqa.selenium.WebDriverException: unknown error: net::ERR_CONNECTION_TIMED_OUT"
+- framework: selenium-java
+  category: environment
+  rule: NET-SSL
+  error: "org.openqa.selenium.WebDriverException: unknown error: net::ERR_CERT_DATE_INVALID"
+- framework: selenium-java
+  category: product
+  rule: ASSERT-EQ
+  error: |
+    org.opentest4j.AssertionFailedError: expected: <Order Placed> but was: <Payment Failed>
+    at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+- framework: selenium-java
+  category: product
+  rule: ASSERT-EQ
+  error: "expected: <Order Placed> but was: <Payment Failed>"
+- framework: selenium-java
+  category: product
+  rule: ASSERT-EQ
+  error: "org.opentest4j.AssertionFailedError: Cart badge count ==> expected: <3> but was: <2>"
+- framework: selenium-java
+  category: product
+  rule: ASSERT-EQ
+  error: "java.lang.AssertionError: Discount not applied expected [$90.00] but found [$100.00]"
+- framework: selenium-java
+  category: product
+  rule: ASSERT-EQ
+  error: "java.lang.AssertionError: expected [true] but found [false]"
+- framework: selenium-java
+  category: product
+  rule: ASSERT-EQ
+  error: |
+    java.lang.AssertionError:
+    Expecting actual:
+      "Your session has expired"
+    to contain:
+      "Welcome back, Asha"
+- framework: selenium-java
+  category: product
+  rule: ASSERT-EQ
+  error: |
+    org.junit.ComparisonFailure: expected:<[Shipped]> but was:<[Processing]>
+- framework: selenium-java
+  category: product
+  rule: ASSERT-EQ
+  error: |
+    java.lang.AssertionError: The following asserts failed:
+      Invoice total expected [1180.00] but found [1080.00],
+      GST line expected [180.00] but found [80.00]
+- framework: selenium-java
+  category: product
+  rule: ASSERT-EQ
+  error: |
+    org.assertj.core.error.AssertJMultipleFailuresError:
+    Multiple Failures (2 failures)
+    -- failure 1 --
+    [Order status] expected: "CONFIRMED" but was: "PENDING"
+- framework: selenium-java
+  category: product
+  rule: ASSERT-EQ
+  error: |
+    java.lang.AssertionError:
+    Expected: is "Delivered"
+         but: was "In transit"
+- framework: selenium-java
+  category: maintenance
+  rule: TEST-CODE-ERROR
+  error: "java.lang.NoSuchMethodError: 'void com.acme.pages.CheckoutPage.selectSavedCard(java.lang.String)'"
+- framework: selenium-java
+  category: unclassified
+  error: |
+    java.lang.NullPointerException: Cannot invoke "String.trim()" because "value" is null
+    at com.acme.steps.ProfileSteps.verifyNickname(ProfileSteps.java:88)
+- framework: selenium-java
+  category: environment
+  rule: ENV-RESOURCES
+  error: "java.lang.OutOfMemoryError: Java heap space"
+- framework: selenium-java
+  category: environment
+  rule: TIMEOUT-GLOBAL
+  error: "org.testng.internal.thread.ThreadTimeoutException: Method com.acme.tests.CheckoutTest.payWithUpi() didn't finish within the time-out 120000"
+
+# ───────────────────────────── Playwright (TS) ─────────────────────────────
+- framework: playwright
+  category: maintenance
+  rule: PW-LOCATOR
+  error: |
+    locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: 'Login' })
+- framework: playwright
+  category: maintenance
+  rule: PW-LOCATOR
+  error: "locator.click: Timeout 30000ms exceeded waiting for getByRole"
+- framework: playwright
+  category: maintenance
+  rule: PW-LOCATOR
+  error: |
+    locator.fill: Timeout 10000ms exceeded.
+    Call log:
+      - waiting for locator('#email')
+- framework: playwright
+  category: maintenance
+  rule: PW-LOCATOR
+  error: |
+    page.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for locator('[data-test="apply-coupon"]')
+- framework: playwright
+  category: maintenance
+  rule: PW-LOCATOR
+  error: |
+    locator.check: Timeout 15000ms exceeded.
+    Call log:
+      - waiting for getByLabel('I accept the terms')
+      - locator resolved to <input disabled type="checkbox"/>
+      - waiting for element to be enabled
+- framework: playwright
+  category: maintenance
+  rule: PW-STRICT
+  error: |
+    Error: locator.click: Error: strict mode violation: getByRole('button', { name: 'Add to cart' }) resolved to 3 elements:
+        1) <button class="add">Add to cart</button>
+- framework: playwright
+  category: maintenance
+  rule: PW-STRICT
+  error: "Error: strict mode violation: locator('.price') resolved to 12 elements"
+- framework: playwright
+  category: maintenance
+  rule: PW-LOCATOR-EXPECT
+  error: |
+    Error: Timed out 5000ms waiting for expect(locator).toBeVisible()
+    Locator: getByTestId('order-summary')
+    Expected: visible
+    Received: <element(s) not found>
+- framework: playwright
+  category: maintenance
+  rule: PW-LOCATOR-EXPECT
+  error: |
+    Error: expect(locator).toHaveText(expected)
+    Locator: locator('#total')
+    Expected string: "₹1,180.00"
+    Received: <element(s) not found>
+- framework: playwright
+  category: maintenance
+  rule: PW-DETACHED
+  error: |
+    locator.click: Element is not attached to the DOM
+    Call log:
+      - waiting for getByText('Continue')
+- framework: playwright
+  category: product
+  rule: ASSERT-VISIBLE-TEXT
+  error: |
+    Error: Timed out 5000ms waiting for expect(locator).toHaveText(expected)
+    Locator: getByTestId('order-status')
+    Expected string: "Order Placed"
+    Received string: "Payment Failed"
+- framework: playwright
+  category: product
+  rule: ASSERT-VISIBLE-TEXT
+  error: |
+    Error: expect(locator).toContainText(expected)
+    Locator: locator('.toast')
+    Expected substring: "Coupon applied"
+    Received string: "Coupon is invalid"
+- framework: playwright
+  category: product
+  rule: ASSERT-VISIBLE-TEXT
+  error: |
+    Error: expect(locator).toHaveCount(expected)
+    Locator: locator('.cart-item')
+    Expected: 3
+    Received: 2
+- framework: playwright
+  category: product
+  rule: ASSERT-VISIBLE-TEXT
+  error: |
+    Error: expect(page).toHaveURL(expected)
+    Expected pattern: /\/order\/confirmation/
+    Received string: "https://staging.acme.test/checkout/error"
+- framework: playwright
+  category: product
+  rule: ASSERT-VISIBLE-TEXT
+  error: |
+    Error: Timed out 5000ms waiting for expect(locator).toBeVisible()
+    Locator: getByText('Payment successful')
+    Expected: visible
+    Received: hidden
+- framework: playwright
+  category: product
+  rule: ASSERT-VISIBLE-TEXT
+  error: |
+    Error: expect(locator).toBeEnabled()
+    Locator: getByRole('button', { name: 'Place order' })
+    Expected: enabled
+    Received: disabled
+- framework: playwright
+  category: product
+  rule: ASSERT-EQ
+  error: |
+    Error: expect(received).toBe(expected) // Object.is equality
+    Expected: 200
+    Received: 409
+- framework: playwright
+  category: product
+  rule: ASSERT-EQ
+  error: |
+    Error: expect(received).toEqual(expected) // deep equality
+    - Expected  - 1
+    + Received  + 1
+      Object {
+    -   "status": "PAID",
+    +   "status": "FAILED",
+      }
+- framework: playwright
+  category: environment
+  rule: PW-BROWSER
+  error: "locator.click: Target page, context or browser has been closed"
+- framework: playwright
+  category: environment
+  rule: PW-BROWSER
+  error: "page.goto: Target closed"
+- framework: playwright
+  category: environment
+  rule: PW-BROWSER
+  error: |
+    browserType.launch: Executable doesn't exist at /ms-playwright/chromium-1105/chrome-linux/chrome
+    Looks like Playwright Test or Playwright was just installed or updated.
+- framework: playwright
+  category: environment
+  rule: PW-BROWSER
+  error: "Error: page.waitForLoadState: Navigation failed because page crashed!"
+- framework: playwright
+  category: environment
+  rule: NET-REFUSED
+  error: |
+    page.goto: net::ERR_CONNECTION_REFUSED at https://staging.acme.test/login
+    Call log:
+      - navigating to "https://staging.acme.test/login", waiting until "load"
+- framework: playwright
+  category: environment
+  rule: NET-DNS
+  error: "page.goto: net::ERR_NAME_NOT_RESOLVED at https://qa3.acme.internal/"
+- framework: playwright
+  category: environment
+  rule: NET-RESET
+  error: "apiRequestContext.post: socket hang up"
+- framework: playwright
+  category: environment
+  rule: NET-RESET
+  error: "apiRequestContext.get: read ECONNRESET"
+- framework: playwright
+  category: environment
+  rule: TIMEOUT-GLOBAL
+  error: "Test timeout of 60000ms exceeded."
+- framework: playwright
+  category: environment
+  rule: TIMEOUT-GLOBAL
+  error: |
+    page.goto: Timeout 30000ms exceeded.
+    Call log:
+      - navigating to "https://staging.acme.test/", waiting until "load"
+- framework: playwright
+  category: environment
+  rule: HTTP-5XX-GW
+  error: |
+    Error: expect(received).toBe(expected)
+    Expected: 200
+    Received: 503
+    API response status code 503 Service Unavailable
+- framework: playwright
+  category: maintenance
+  rule: TEST-CODE-ERROR
+  error: "Error: Cannot find module '../pages/checkout.page' from 'tests/checkout.spec.ts'"
+- framework: playwright
+  category: unclassified
+  error: "TypeError: Cannot read properties of undefined (reading 'id')"
+
+# ───────────────────────────── Cypress ─────────────────────────────
+- framework: cypress
+  category: maintenance
+  rule: CY-NOTFOUND
+  error: "AssertionError: Timed out retrying after 4000ms: Expected to find element: `[data-cy=submit]`, but never found it."
+- framework: cypress
+  category: maintenance
+  rule: CY-NOTFOUND
+  error: "Timed out retrying after 10000ms: Expected to find element: `.product-card:first`, but never found it."
+- framework: cypress
+  category: maintenance
+  rule: CY-NOTFOUND
+  error: "Timed out retrying after 4000ms: Expected to find content: 'Sign in' but never did."
+- framework: cypress
+  category: maintenance
+  rule: CY-NOTFOUND
+  error: |
+    CypressError: Timed out retrying after 4050ms: `cy.click()` failed because this element is being covered by another element:
+    <div class="modal-backdrop">...</div>
+- framework: cypress
+  category: maintenance
+  rule: CY-NOTFOUND
+  error: "CypressError: `cy.type()` failed because this element is disabled"
+- framework: cypress
+  category: maintenance
+  rule: CY-DETACHED
+  error: "CypressError: Timed out retrying after 4000ms: `cy.click()` failed because the page updated as a result of this command, but you tried to continue the command chain."
+- framework: cypress
+  category: maintenance
+  rule: CY-DETACHED
+  error: "CypressError: cy.click() failed because this element is detached from the DOM."
+- framework: cypress
+  category: environment
+  rule: CY-NETWORK
+  error: |
+    CypressError: `cy.visit()` failed trying to load:
+    https://staging.acme.test/
+    We attempted to make an http request to this URL but the request failed without a response.
+- framework: cypress
+  category: environment
+  rule: HTTP-5XX-GW
+  error: |
+    CypressError: `cy.visit()` failed on:
+    https://staging.acme.test/
+    The response we received from your web server was:
+      > 502: Bad Gateway
+- framework: cypress
+  category: environment
+  rule: NET-REFUSED
+  error: |
+    CypressError: `cy.request()` failed trying to load:
+    http://localhost:8080/api/seed
+    Error: connect ECONNREFUSED 127.0.0.1:8080
+- framework: cypress
+  category: product
+  rule: ASSERT-EQ
+  error: "AssertionError: Timed out retrying after 4000ms: expected '<span.total>' to have text '₹1,180.00', but the text was '₹1,080.00'"
+- framework: cypress
+  category: product
+  rule: ASSERT-EQ
+  error: "AssertionError: expected 'Payment Failed' to equal 'Order Placed'"
+- framework: cypress
+  category: product
+  rule: ASSERT-EQ
+  error: "AssertionError: Timed out retrying after 4000ms: expected '<button#pay>' to be 'enabled'"
+- framework: cypress
+  category: product
+  rule: ASSERT-EQ
+  error: "AssertionError: expected [ 'Electronics', 'Toys' ] to include 'Books'"
+- framework: cypress
+  category: product
+  rule: ASSERT-EQ
+  error: "AssertionError: expected 3 to equal 4"
+- framework: cypress
+  category: environment
+  rule: TIMEOUT-GLOBAL
+  error: "Error: Timeout of 60000ms exceeded. For async tests and hooks, ensure \"done()\" is called"
+- framework: cypress
+  category: environment
+  rule: ENV-RESOURCES
+  error: "FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory"
+- framework: cypress
+  category: maintenance
+  rule: TEST-CODE-ERROR
+  error: "ReferenceError: loginAsAdmin is not defined"
+
+# ───────────────────────────── RestAssured / API ─────────────────────────────
+- framework: restassured
+  category: environment
+  rule: HTTP-5XX-GW
+  error: "Expected status code <200> but was <503>."
+- framework: restassured
+  category: environment
+  rule: HTTP-5XX-GW
+  error: "java.lang.AssertionError: 1 expectation failed.\nExpected status code <201> but was <502>."
+- framework: restassured
+  category: environment
+  rule: HTTP-5XX-GW
+  error: "java.lang.AssertionError: 1 expectation failed. Expected status code <200> but was <504>."
+- framework: restassured
+  category: product
+  rule: RA-STATUS-4XX
+  error: "java.lang.AssertionError: 1 expectation failed.\nExpected status code <200> but was <400>."
+- framework: restassured
+  category: product
+  rule: RA-STATUS-4XX
+  error: "Expected status code <201> but was <422>."
+- framework: restassured
+  category: product
+  rule: RA-STATUS-4XX
+  error: "Expected status code <200> but was <404>."
+- framework: restassured
+  category: product
+  rule: HTTP-500
+  error: "java.lang.AssertionError: 1 expectation failed.\nExpected status code <200> but was <500>."
+- framework: restassured
+  category: product
+  rule: HTTP-500
+  error: "Response: HTTP/1.1 500 Internal Server Error {\"error\":\"NullPointerException in OrderService\"}"
+- framework: restassured
+  category: product
+  rule: RA-BODY
+  error: |
+    java.lang.AssertionError: 1 expectation failed.
+    JSON path data.order.status doesn't match.
+    Expected: CONFIRMED
+      Actual: PENDING
+- framework: restassured
+  category: product
+  rule: RA-BODY
+  error: |
+    io.restassured.module.jsv.JsonSchemaValidationException: Response does not match schema:
+    error: object has missing required properties (["currency"])
+- framework: restassured
+  category: product
+  rule: RA-BODY
+  error: "java.lang.AssertionError: 1 expectation failed.\nResponse body doesn't match expectation.\nExpected: \"PAID\"\n  Actual: \"FAILED\""
+- framework: restassured
+  category: environment
+  rule: NET-REFUSED
+  error: "java.net.ConnectException: Connection refused (Connection refused)"
+- framework: restassured
+  category: environment
+  rule: NET-REFUSED
+  error: "ECONNREFUSED 10.0.0.5:8443"
+- framework: restassured
+  category: environment
+  rule: NET-DNS
+  error: "java.net.UnknownHostException: payments-svc.qa.acme.internal: Name or service not known"
+- framework: restassured
+  category: environment
+  rule: NET-TIMEOUT
+  error: "java.net.SocketTimeoutException: Read timed out"
+- framework: restassured
+  category: environment
+  rule: NET-TIMEOUT
+  error: "org.apache.http.conn.ConnectTimeoutException: Connect to orders-api:443 failed: connect timed out"
+- framework: restassured
+  category: environment
+  rule: NET-RESET
+  error: "java.net.SocketException: Connection reset"
+- framework: restassured
+  category: environment
+  rule: NET-SSL
+  error: "javax.net.ssl.SSLHandshakeException: PKIX path building failed: unable to find valid certification path to requested target"
+- framework: restassured
+  category: environment
+  rule: ENV-RATE-LIMIT
+  error: "Expected status code <200> but was <429>. Too Many Requests"
+- framework: restassured
+  category: environment
+  rule: DB-CONN
+  error: "org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection; nested exception is java.sql.SQLTransientConnectionException: HikariPool-1 - Connection is not available, request timed out after 30000ms."
+- framework: restassured
+  category: environment
+  rule: DB-CONN
+  error: "com.mysql.cj.jdbc.exceptions.CommunicationsException: Communications link failure"
+- framework: restassured
+  category: environment
+  rule: DB-CONN
+  error: "org.postgresql.util.PSQLException: FATAL: the database system is starting up"
+- framework: restassured
+  category: environment
+  rule: DB-CONN
+  error: "MongoServerSelectionError: connect ECONNREFUSED 10.1.2.3:27017"
+- framework: axios
+  category: product
+  rule: RA-STATUS-4XX
+  error: "AxiosError: Request failed with status code 409"
+- framework: axios
+  category: product
+  rule: HTTP-500
+  error: "AxiosError: Request failed with status code 500"
+- framework: axios
+  category: environment
+  rule: HTTP-5XX-GW
+  error: "AxiosError: Request failed with status code 503"
+- framework: axios
+  category: environment
+  rule: NET-DNS
+  error: "Error: getaddrinfo ENOTFOUND api.staging.acme.test"
+- framework: axios
+  category: environment
+  rule: NET-TIMEOUT
+  error: "Error: connect ETIMEDOUT 52.14.200.11:443"
+- framework: supertest
+  category: product
+  rule: RA-STATUS-4XX
+  error: "Error: expected 200 \"OK\", got 403 \"Forbidden\""
+
+# ───────────────────────────── JUnit / TestNG / AssertJ / Hamcrest ─────────────────────────────
+- framework: junit5
+  category: product
+  rule: ASSERT-EQ
+  error: "org.opentest4j.AssertionFailedError: expected: <true> but was: <false>"
+- framework: junit5
+  category: product
+  rule: ASSERT-EQ
+  error: "org.opentest4j.AssertionFailedError: Refund amount ==> expected: <250.0> but was: <0.0>"
+- framework: junit5
+  category: product
+  rule: ASSERT-EQ
+  error: "org.opentest4j.AssertionFailedError: expected: not <null>"
+- framework: junit4
+  category: product
+  rule: ASSERT-EQ
+  error: "java.lang.AssertionError: expected:<5> but was:<4>"
+- framework: testng
+  category: product
+  rule: ASSERT-EQ
+  error: "java.lang.AssertionError: Order count mismatch expected [10] but found [9]"
+- framework: assertj
+  category: product
+  rule: ASSERT-EQ
+  error: |
+    java.lang.AssertionError:
+    Expecting value to be true but was false
+- framework: assertj
+  category: product
+  rule: ASSERT-EQ
+  error: |
+    org.opentest4j.AssertionFailedError:
+    expected: "INR"
+     but was: "USD"
+- framework: assertj
+  category: product
+  rule: ASSERT-EQ
+  error: |
+    java.lang.AssertionError:
+    Expecting collection:
+      ["UPI", "Card"]
+    to contain:
+      ["NetBanking"]
+- framework: hamcrest
+  category: product
+  rule: ASSERT-EQ
+  error: |
+    java.lang.AssertionError:
+    Expected: a collection with size <3>
+         but: collection size was <2>
+- framework: testng
+  category: environment
+  rule: TIMEOUT-GLOBAL
+  error: "org.testng.internal.thread.ThreadTimeoutException: Method org.acme.SearchTest.search() didn't finish within the time-out 60000"
+- framework: junit5
+  category: environment
+  rule: TIMEOUT-GLOBAL
+  error: "java.util.concurrent.TimeoutException: searchProducts() timed out after 30 seconds"
+- framework: junit5
+  category: maintenance
+  rule: TEST-CODE-ERROR
+  error: "java.lang.ClassNotFoundException: com.acme.fixtures.UserFactory"
+- framework: junit5
+  category: unclassified
+  error: "java.lang.IllegalStateException: Test data user 'qa_admin_7' already locked by another test"
+- framework: junit5
+  category: unclassified
+  error: "java.lang.IndexOutOfBoundsException: Index 0 out of bounds for length 0"
+- framework: jest
+  category: product
+  rule: ASSERT-EQ
+  error: |
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "CONFIRMED"
+    Received: "PENDING"
+- framework: jest
+  category: product
+  rule: ASSERT-EQ
+  error: |
+    expect(received).toHaveLength(expected)
+    Expected length: 3
+    Received length: 1
+- framework: jest
+  category: environment
+  rule: TIMEOUT-GLOBAL
+  error: "thrown: \"Exceeded timeout of 5000 ms for a test.\""
+- framework: mocha
+  category: product
+  rule: ASSERT-EQ
+  error: "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'pending' !== 'paid'"
+
+# ───────────────────────────── Cucumber ─────────────────────────────
+- framework: cucumber-jvm
+  category: maintenance
+  rule: CUKE-UNDEFINED
+  error: |
+    io.cucumber.junit.UndefinedStepException: The step 'I apply the loyalty voucher' is undefined.
+    You can implement this step using the snippet(s) below:
+- framework: cucumber-js
+  category: maintenance
+  rule: CUKE-UNDEFINED
+  error: "Undefined. Implement with the following snippet: When('I pay with UPI', function () {"
+- framework: cucumber-js
+  category: maintenance
+  rule: CUKE-UNDEFINED
+  error: "Step undefined: Then the invoice is emailed to the customer"
+- framework: cucumber-jvm
+  category: maintenance
+  rule: CUKE-UNDEFINED
+  error: "io.cucumber.java.PendingException: TODO: implement me"
+- framework: cucumber-jvm
+  category: maintenance
+  rule: CUKE-AMBIGUOUS
+  error: "io.cucumber.core.runner.AmbiguousStepDefinitionsException: \"I click on Pay\" matches more than one step definition"
+- framework: cucumber-js
+  category: maintenance
+  rule: CUKE-AMBIGUOUS
+  error: "Multiple step definitions match: I open the cart"
+- framework: cucumber-jvm
+  category: product
+  rule: ASSERT-EQ
+  error: |
+    org.opentest4j.AssertionFailedError: expected: <Order Placed> but was: <Payment Failed>
+      at com.acme.steps.CheckoutSteps.orderIsPlaced(CheckoutSteps.java:57)
+      at ✽.the order is placed(file:///builds/app/src/test/resources/features/checkout.feature:14)
+- framework: cucumber-jvm
+  category: maintenance
+  rule: SEL-LOCATOR
+  error: |
+    org.openqa.selenium.NoSuchElementException: no such element: Unable to locate element: {"method":"css selector","selector":"button.apply-coupon"}
+      at ✽.I apply coupon "SAVE10"(file:///builds/app/src/test/resources/features/coupon.feature:9)
+- framework: cucumber-js
+  category: environment
+  rule: NET-REFUSED
+  error: "Error: connect ECONNREFUSED 127.0.0.1:4444\n    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16)"
+
+# ───────────────────────────── CI infrastructure ─────────────────────────────
+- framework: ci
+  category: environment
+  rule: ENV-RESOURCES
+  error: "Error: ENOSPC: no space left on device, write"
+- framework: ci
+  category: environment
+  rule: ENV-RESOURCES
+  error: "java.io.IOException: Too many open files"
+- framework: ci
+  category: environment
+  rule: NET-SSL
+  error: "Error: certificate has expired\n    at TLSSocket.onConnectSecure (node:_tls_wrap:1674:34)"
+- framework: ci
+  category: environment
+  rule: NET-SSL
+  error: "Error: self signed certificate in certificate chain"
+- framework: ci
+  category: environment
+  rule: HTTP-5XX-GW
+  error: "Error: Service Unavailable - the authentication stub returned a maintenance page"
+- framework: ci
+  category: environment
+  rule: HTTP-5XX-GW
+  error: "502 Bad Gateway nginx/1.25.3"
+- framework: ci
+  category: environment
+  rule: NET-RESET
+  error: "Error: write EPIPE"
+- framework: ci
+  category: environment
+  rule: ENV-RESOURCES
+  error: "Process finished with exit code 137"
+- framework: ci
+  category: unclassified
+  error: "Test was skipped by a failed @BeforeClass configuration method"

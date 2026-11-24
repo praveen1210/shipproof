@@ -1,0 +1,54 @@
+{
+  "config": { "version": "1.49.0" },
+  "suites": [
+    {
+      "title": "search.spec.ts",
+      "file": "tests/search.spec.ts",
+      "specs": [
+        {
+          "title": "search shows results @PROJ-22",
+          "file": "tests/search.spec.ts",
+          "tags": ["@PROJ-22"],
+          "tests": [
+            { "timeout": 30000, "annotations": [], "results": [ { "status": "passed", "duration": 2310 } ] }
+          ]
+        },
+        {
+          "title": "filter by category",
+          "file": "tests/search.spec.ts",
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [{ "type": "issue", "description": "PROJ-22" }],
+              "results": [
+                {
+                  "status": "failed",
+                  "duration": 30120,
+                  "error": {
+                    "message": "\u001b[31mlocator.click: Timeout 30000ms exceeded.\u001b[39m\nCall log:\n  - waiting for getByRole('button', { name: 'Electronics' })",
+                    "stack": "locator.click: Timeout 30000ms exceeded.\n    at /builds/app/tests/search.spec.ts:21:52"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "suites": [
+        {
+          "title": "sorting",
+          "specs": [
+            {
+              "title": "sort by price [PROJ-23]",
+              "file": "tests/search.spec.ts",
+              "tests": [
+                { "timeout": 30000, "annotations": [], "results": [ { "status": "timedOut", "duration": 30001 } ] }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

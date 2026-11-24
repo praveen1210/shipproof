@@ -1,0 +1,12 @@
+# ShipProof – Claude Code guide
+- Source of truth: docs/PRD.md. Work phase by phase (§10). Don't start a phase until the previous exit criteria pass.
+- Stack: Forge (Jira only), TypeScript, UI Kit (@forge/react), @forge/api, @forge/kvs, @forge/events, zod, vitest.
+- ALWAYS check Forge module/API syntax with the Forge MCP server/docs before writing manifest or API code. Never rely on memory: Rovo, rovo:mcp and Teamwork Graph change often. The installed `node_modules/@forge/*` typings are the quickest check for API names (e.g. `Sort`, `WhereConditions` in @forge/kvs).
+- Business logic = pure functions in src/services with unit tests. Resolvers (src/resolvers), actions (src/actions), web trigger (src/ingest/webtrigger.ts) and consumer (src/triage/consumer.ts) are thin adapters over src/services/app.ts.
+- No Forge LLM (@forge/llm is always billed). No external egress. No logging of tokens or raw payloads.
+- Dev site = the Forge demo site from `forge site provision` (it has Rovo). Install with `forge install --site <demo-site>`.
+- Write actions require user confirmation and are NOT exposed via rovo:mcp (enforced by test/manifest.test.ts).
+- Classifier: add rules in src/services/triage/rules.ts, add labelled examples to test/fixtures/failures.yaml. Never tune rules against test/fixtures/failures-holdout.yaml; when you add rules, move those entries into the main corpus and write a fresh hold-out set.
+- Custom entity values: indexed fields are declared attributes, everything else goes in `data` (type any). Entities and attributes can't be deleted after deploy, only added.
+- Function keys ≤ 23 chars; every `handler: index.X` must be exported from src/index.ts (tested).
+- Before each commit: npm test, npm run typecheck, forge lint. Deploy: forge deploy -e development && forge install --upgrade.

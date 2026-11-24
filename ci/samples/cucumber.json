@@ -1,0 +1,77 @@
+[
+  {
+    "uri": "src/test/resources/features/checkout.feature",
+    "name": "Checkout",
+    "tags": [{ "name": "@regression" }],
+    "elements": [
+      {
+        "type": "background",
+        "keyword": "Background",
+        "name": "",
+        "steps": [
+          { "keyword": "Given ", "name": "I am logged in as a returning customer", "result": { "status": "passed", "duration": 812000000 } }
+        ]
+      },
+      {
+        "type": "scenario",
+        "keyword": "Scenario",
+        "name": "Pay with saved card",
+        "line": 8,
+        "tags": [{ "name": "@PROJ-12" }],
+        "steps": [
+          { "keyword": "Given ", "name": "my cart has 2 items", "result": { "status": "passed", "duration": 1200000000 } },
+          { "keyword": "When ", "name": "I confirm the payment", "result": { "status": "passed", "duration": 1500000000 } },
+          {
+            "keyword": "Then ",
+            "name": "the order is placed",
+            "result": {
+              "status": "failed",
+              "duration": 600000000,
+              "error_message": "org.opentest4j.AssertionFailedError: expected: <Order Placed> but was: <Payment Failed>\n\tat org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:55)\n\tat com.acme.steps.CheckoutSteps.orderIsPlaced(CheckoutSteps.java:57)"
+            }
+          }
+        ]
+      },
+      {
+        "type": "scenario",
+        "keyword": "Scenario",
+        "name": "Apply coupon at checkout",
+        "line": 15,
+        "tags": [{ "name": "@PROJ-15" }],
+        "steps": [
+          { "keyword": "Given ", "name": "my cart has 1 item", "result": { "status": "passed", "duration": 900000000 } },
+          {
+            "keyword": "When ",
+            "name": "I apply coupon \"SAVE10\"",
+            "result": {
+              "status": "failed",
+              "duration": 10000000000,
+              "error_message": "org.openqa.selenium.NoSuchElementException: no such element: Unable to locate element: {\"method\":\"css selector\",\"selector\":\"button.apply-coupon\"}\n\tat org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:351)"
+            }
+          },
+          { "keyword": "Then ", "name": "the total is discounted by 10%", "result": { "status": "skipped" } }
+        ]
+      },
+      {
+        "type": "scenario",
+        "keyword": "Scenario",
+        "name": "Pay with UPI",
+        "line": 22,
+        "tags": [{ "name": "@PROJ-12" }],
+        "steps": [
+          { "keyword": "When ", "name": "I pay with UPI", "result": { "status": "undefined" } }
+        ]
+      },
+      {
+        "type": "scenario",
+        "keyword": "Scenario",
+        "name": "Guest checkout",
+        "line": 27,
+        "tags": [],
+        "steps": [
+          { "keyword": "When ", "name": "I check out as a guest", "result": { "status": "passed", "duration": 2100000000 } }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,582 @@
+{
+  "schemaVersion": 1,
+  "source": "jenkins",
+  "projectKey": "PROJ",
+  "buildId": "1288-rerun",
+  "buildUrl": "https://ci.example.com/job/shop-app/job/nightly-regression/1288/",
+  "pipeline": "nightly-regression",
+  "branch": "release/2.4.0",
+  "commit": "e5f6071",
+  "environment": "staging",
+  "startedAt": "2026-11-24T14:26:18.460Z",
+  "part": {
+    "index": 1,
+    "total": 1
+  },
+  "results": [
+    {
+      "id": "checkout.feature:Pay with saved Visa card",
+      "name": "Pay with saved Visa card",
+      "suite": "checkout.feature",
+      "status": "failed",
+      "durationMs": 2845,
+      "issueKeys": [
+        "PROJ-1"
+      ],
+      "failedStep": "Then the order is placed",
+      "error": "org.opentest4j.AssertionFailedError: expected: <Order Placed> but was: <Payment Failed>\n\tat org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:55)\n\tat com.acme.steps.CheckoutSteps.orderIsPlaced(CheckoutSteps.java:57)"
+    },
+    {
+      "id": "checkout.feature:Pay with saved Mastercard",
+      "name": "Pay with saved Mastercard",
+      "suite": "checkout.feature",
+      "status": "failed",
+      "durationMs": 1764,
+      "issueKeys": [
+        "PROJ-1"
+      ],
+      "failedStep": "Then the order is placed",
+      "error": "org.opentest4j.AssertionFailedError: expected: <Order Placed> but was: <Payment Failed>\n\tat org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:55)\n\tat com.acme.steps.CheckoutSteps.orderIsPlaced(CheckoutSteps.java:57)"
+    },
+    {
+      "id": "checkout.feature:Pay with saved RuPay card",
+      "name": "Pay with saved RuPay card",
+      "suite": "checkout.feature",
+      "status": "failed",
+      "durationMs": 9683,
+      "issueKeys": [
+        "PROJ-1"
+      ],
+      "failedStep": "Then the order is placed",
+      "error": "org.opentest4j.AssertionFailedError: expected: <Order Placed> but was: <Payment Failed>\n\tat org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:55)\n\tat com.acme.steps.CheckoutSteps.orderIsPlaced(CheckoutSteps.java:57)"
+    },
+    {
+      "id": "checkout.feature:Saved cards are listed at checkout",
+      "name": "Saved cards are listed at checkout",
+      "suite": "checkout.feature",
+      "status": "passed",
+      "durationMs": 8602,
+      "issueKeys": [
+        "PROJ-1"
+      ]
+    },
+    {
+      "id": "checkout.feature:Expired saved cards are hidden",
+      "name": "Expired saved cards are hidden",
+      "suite": "checkout.feature",
+      "status": "passed",
+      "durationMs": 7521,
+      "issueKeys": [
+        "PROJ-1"
+      ]
+    },
+    {
+      "id": "checkout.feature:Declined saved card shows Card declined",
+      "name": "Declined saved card shows Card declined",
+      "suite": "checkout.feature",
+      "status": "passed",
+      "durationMs": 6440,
+      "issueKeys": [
+        "PROJ-1"
+      ]
+    },
+    {
+      "id": "checkout.feature:Checkout total includes GST",
+      "name": "Checkout total includes GST",
+      "suite": "checkout.feature",
+      "status": "passed",
+      "durationMs": 5359,
+      "issueKeys": [
+        "PROJ-1"
+      ]
+    },
+    {
+      "id": "checkout.feature:Pay with saved card on mobile web",
+      "name": "Pay with saved card on mobile web",
+      "suite": "checkout.feature",
+      "status": "passed",
+      "durationMs": 4278,
+      "issueKeys": [
+        "PROJ-1"
+      ]
+    },
+    {
+      "id": "coupon.spec.ts:Valid coupon reduces the total",
+      "name": "Valid coupon reduces the total",
+      "suite": "coupon.spec.ts",
+      "status": "failed",
+      "durationMs": 3197,
+      "issueKeys": [
+        "PROJ-2"
+      ],
+      "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByRole('button', { name: 'Apply coupon' })\n    at CheckoutPage.applyCoupon (tests/pages/checkout.page.ts:48:31)"
+    },
+    {
+      "id": "coupon.spec.ts:Percentage coupon on sale items",
+      "name": "Percentage coupon on sale items",
+      "suite": "coupon.spec.ts",
+      "status": "failed",
+      "durationMs": 2116,
+      "issueKeys": [
+        "PROJ-2"
+      ],
+      "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByRole('button', { name: 'Apply coupon' })\n    at CheckoutPage.applyCoupon (tests/pages/checkout.page.ts:48:31)"
+    },
+    {
+      "id": "coupon.spec.ts:Coupon removed after cart change",
+      "name": "Coupon removed after cart change",
+      "suite": "coupon.spec.ts",
+      "status": "failed",
+      "durationMs": 10035,
+      "issueKeys": [
+        "PROJ-2"
+      ],
+      "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByRole('button', { name: 'Apply coupon' })\n    at CheckoutPage.applyCoupon (tests/pages/checkout.page.ts:48:31)"
+    },
+    {
+      "id": "coupon.spec.ts:Coupon on mobile checkout",
+      "name": "Coupon on mobile checkout",
+      "suite": "coupon.spec.ts",
+      "status": "failed",
+      "durationMs": 8954,
+      "issueKeys": [
+        "PROJ-2"
+      ],
+      "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByRole('button', { name: 'Apply coupon' })\n    at CheckoutPage.applyCoupon (tests/pages/checkout.page.ts:48:31)"
+    },
+    {
+      "id": "coupon.spec.ts:Expired coupon shows Coupon expired",
+      "name": "Expired coupon shows Coupon expired",
+      "suite": "coupon.spec.ts",
+      "status": "passed",
+      "durationMs": 7873,
+      "issueKeys": [
+        "PROJ-2"
+      ]
+    },
+    {
+      "id": "coupon.spec.ts:Only one coupon per order",
+      "name": "Only one coupon per order",
+      "suite": "coupon.spec.ts",
+      "status": "passed",
+      "durationMs": 6792,
+      "issueKeys": [
+        "PROJ-2"
+      ]
+    },
+    {
+      "id": "coupon.spec.ts:Coupon field hidden for gift cards",
+      "name": "Coupon field hidden for gift cards",
+      "suite": "coupon.spec.ts",
+      "status": "passed",
+      "durationMs": 5711,
+      "issueKeys": [
+        "PROJ-2"
+      ]
+    },
+    {
+      "id": "login.feature:Log in with email and password",
+      "name": "Log in with email and password",
+      "suite": "login.feature",
+      "status": "failed",
+      "durationMs": 4630,
+      "issueKeys": [
+        "PROJ-3"
+      ],
+      "failedStep": "When I submit the login form",
+      "error": "org.openqa.selenium.NoSuchElementException: no such element: Unable to locate element: {\"method\":\"css selector\",\"selector\":\"#loginBtn\"}\n  (Session info: chrome=131.0.6778.85)\n\tat org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:351)\n\tat com.acme.pages.LoginPage.submit(LoginPage.java:41)"
+    },
+    {
+      "id": "login.feature:Remember me keeps the session",
+      "name": "Remember me keeps the session",
+      "suite": "login.feature",
+      "status": "failed",
+      "durationMs": 3549,
+      "issueKeys": [
+        "PROJ-3"
+      ],
+      "failedStep": "When I submit the login form",
+      "error": "org.openqa.selenium.NoSuchElementException: no such element: Unable to locate element: {\"method\":\"css selector\",\"selector\":\"#loginBtn\"}\n  (Session info: chrome=131.0.6778.85)\n\tat org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:351)\n\tat com.acme.pages.LoginPage.submit(LoginPage.java:41)"
+    },
+    {
+      "id": "login.feature:Log in after password reset",
+      "name": "Log in after password reset",
+      "suite": "login.feature",
+      "status": "failed",
+      "durationMs": 2468,
+      "issueKeys": [
+        "PROJ-3"
+      ],
+      "failedStep": "When I submit the login form",
+      "error": "org.openqa.selenium.NoSuchElementException: no such element: Unable to locate element: {\"method\":\"css selector\",\"selector\":\"#loginBtn\"}\n  (Session info: chrome=131.0.6778.85)\n\tat org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:351)\n\tat com.acme.pages.LoginPage.submit(LoginPage.java:41)"
+    },
+    {
+      "id": "login.feature:Log in redirects to the cart",
+      "name": "Log in redirects to the cart",
+      "suite": "login.feature",
+      "status": "failed",
+      "durationMs": 1387,
+      "issueKeys": [
+        "PROJ-3"
+      ],
+      "failedStep": "When I submit the login form",
+      "error": "org.openqa.selenium.NoSuchElementException: no such element: Unable to locate element: {\"method\":\"css selector\",\"selector\":\"#loginBtn\"}\n  (Session info: chrome=131.0.6778.85)\n\tat org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:351)\n\tat com.acme.pages.LoginPage.submit(LoginPage.java:41)"
+    },
+    {
+      "id": "login.feature:Log in as business customer",
+      "name": "Log in as business customer",
+      "suite": "login.feature",
+      "status": "failed",
+      "durationMs": 9306,
+      "issueKeys": [
+        "PROJ-3"
+      ],
+      "failedStep": "When I submit the login form",
+      "error": "org.openqa.selenium.NoSuchElementException: no such element: Unable to locate element: {\"method\":\"css selector\",\"selector\":\"#loginBtn\"}\n  (Session info: chrome=131.0.6778.85)\n\tat org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:351)\n\tat com.acme.pages.LoginPage.submit(LoginPage.java:41)"
+    },
+    {
+      "id": "login.feature:Log in from the checkout page",
+      "name": "Log in from the checkout page",
+      "suite": "login.feature",
+      "status": "failed",
+      "durationMs": 8225,
+      "issueKeys": [
+        "PROJ-3"
+      ],
+      "failedStep": "When I submit the login form",
+      "error": "org.openqa.selenium.NoSuchElementException: no such element: Unable to locate element: {\"method\":\"css selector\",\"selector\":\"#loginBtn\"}\n  (Session info: chrome=131.0.6778.85)\n\tat org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:351)\n\tat com.acme.pages.LoginPage.submit(LoginPage.java:41)"
+    },
+    {
+      "id": "login.feature:Five wrong passwords lock the account",
+      "name": "Five wrong passwords lock the account",
+      "suite": "login.feature",
+      "status": "passed",
+      "durationMs": 7144,
+      "issueKeys": [
+        "PROJ-3"
+      ]
+    },
+    {
+      "id": "login.feature:Locked account shows unlock time",
+      "name": "Locked account shows unlock time",
+      "suite": "login.feature",
+      "status": "passed",
+      "durationMs": 6063,
+      "issueKeys": [
+        "PROJ-3"
+      ]
+    },
+    {
+      "id": "OrdersApiTest:Orders are listed newest first",
+      "name": "Orders are listed newest first",
+      "suite": "OrdersApiTest",
+      "status": "passed",
+      "durationMs": 4982,
+      "issueKeys": [
+        "PROJ-4"
+      ]
+    },
+    {
+      "id": "OrdersApiTest:Order shows status total and delivery date",
+      "name": "Order shows status total and delivery date",
+      "suite": "OrdersApiTest",
+      "status": "passed",
+      "durationMs": 3901,
+      "issueKeys": [
+        "PROJ-4"
+      ]
+    },
+    {
+      "id": "OrdersApiTest:Filter orders by status",
+      "name": "Filter orders by status",
+      "suite": "OrdersApiTest",
+      "status": "passed",
+      "durationMs": 2820,
+      "issueKeys": [
+        "PROJ-4"
+      ]
+    },
+    {
+      "id": "OrdersApiTest:Order history paginates",
+      "name": "Order history paginates",
+      "suite": "OrdersApiTest",
+      "status": "passed",
+      "durationMs": 1739,
+      "issueKeys": [
+        "PROJ-4"
+      ]
+    },
+    {
+      "id": "OrdersApiTest:Cancelled orders are listed",
+      "name": "Cancelled orders are listed",
+      "suite": "OrdersApiTest",
+      "status": "passed",
+      "durationMs": 9658,
+      "issueKeys": [
+        "PROJ-4"
+      ]
+    },
+    {
+      "id": "OrdersApiTest:Empty order history",
+      "name": "Empty order history",
+      "suite": "OrdersApiTest",
+      "status": "passed",
+      "durationMs": 8577,
+      "issueKeys": [
+        "PROJ-4"
+      ]
+    },
+    {
+      "id": "OrdersApiTest:Order history for business account",
+      "name": "Order history for business account",
+      "suite": "OrdersApiTest",
+      "status": "passed",
+      "durationMs": 7496,
+      "issueKeys": [
+        "PROJ-4"
+      ]
+    },
+    {
+      "id": "search.spec.ts:Filter search by category",
+      "name": "Filter search by category",
+      "suite": "search.spec.ts",
+      "status": "passed",
+      "durationMs": 6415,
+      "issueKeys": [
+        "PROJ-5"
+      ]
+    },
+    {
+      "id": "search.spec.ts:Sort search results by price",
+      "name": "Sort search results by price",
+      "suite": "search.spec.ts",
+      "status": "passed",
+      "durationMs": 5334,
+      "issueKeys": [
+        "PROJ-5"
+      ]
+    },
+    {
+      "id": "search.spec.ts:Search returns matching products",
+      "name": "Search returns matching products",
+      "suite": "search.spec.ts",
+      "status": "passed",
+      "durationMs": 4253,
+      "issueKeys": [
+        "PROJ-5"
+      ]
+    },
+    {
+      "id": "search.spec.ts:Search with no results",
+      "name": "Search with no results",
+      "suite": "search.spec.ts",
+      "status": "passed",
+      "durationMs": 3172,
+      "issueKeys": [
+        "PROJ-5"
+      ]
+    },
+    {
+      "id": "search.spec.ts:Search suggestions",
+      "name": "Search suggestions",
+      "suite": "search.spec.ts",
+      "status": "passed",
+      "durationMs": 2091,
+      "issueKeys": [
+        "PROJ-5"
+      ]
+    },
+    {
+      "id": "search.spec.ts:Filter by price range",
+      "name": "Filter by price range",
+      "suite": "search.spec.ts",
+      "status": "passed",
+      "durationMs": 10010,
+      "issueKeys": [
+        "PROJ-5"
+      ]
+    },
+    {
+      "id": "search.spec.ts:Search by brand",
+      "name": "Search by brand",
+      "suite": "search.spec.ts",
+      "status": "passed",
+      "durationMs": 8929,
+      "issueKeys": [
+        "PROJ-5"
+      ]
+    },
+    {
+      "id": "search.spec.ts:Search keeps filters on back",
+      "name": "Search keeps filters on back",
+      "suite": "search.spec.ts",
+      "status": "passed",
+      "durationMs": 7848,
+      "issueKeys": [
+        "PROJ-5"
+      ]
+    },
+    {
+      "id": "refunds.feature:Refund to card",
+      "name": "Refund to card",
+      "suite": "refunds.feature",
+      "status": "passed",
+      "durationMs": 6767,
+      "issueKeys": [
+        "PROJ-6"
+      ]
+    },
+    {
+      "id": "refunds.feature:Refund to UPI",
+      "name": "Refund to UPI",
+      "suite": "refunds.feature",
+      "status": "passed",
+      "durationMs": 5686,
+      "issueKeys": [
+        "PROJ-6"
+      ]
+    },
+    {
+      "id": "refunds.feature:Refund email sent",
+      "name": "Refund email sent",
+      "suite": "refunds.feature",
+      "status": "passed",
+      "durationMs": 4605,
+      "issueKeys": [
+        "PROJ-6"
+      ]
+    },
+    {
+      "id": "refunds.feature:Partial refund",
+      "name": "Partial refund",
+      "suite": "refunds.feature",
+      "status": "passed",
+      "durationMs": 3524,
+      "issueKeys": [
+        "PROJ-6"
+      ]
+    },
+    {
+      "id": "refunds.feature:Refund of cancelled order",
+      "name": "Refund of cancelled order",
+      "suite": "refunds.feature",
+      "status": "passed",
+      "durationMs": 2443,
+      "issueKeys": [
+        "PROJ-6"
+      ]
+    },
+    {
+      "id": "refunds.feature:Refund for returned item",
+      "name": "Refund for returned item",
+      "suite": "refunds.feature",
+      "status": "passed",
+      "durationMs": 1362,
+      "issueKeys": [
+        "PROJ-6"
+      ]
+    },
+    {
+      "id": "wishlist.spec.ts:Wishlist badge counts items",
+      "name": "Wishlist badge counts items",
+      "suite": "wishlist.spec.ts",
+      "status": "failed",
+      "durationMs": 9281,
+      "issueKeys": [
+        "PROJ-7"
+      ],
+      "error": "Error: expect(locator).toHaveText(expected)\nLocator: getByTestId('wishlist-badge')\nExpected string: \"2\"\nReceived string: \"0\"\n    at tests/wishlist.spec.ts:19:52"
+    },
+    {
+      "id": "wishlist.spec.ts:Add product to wishlist",
+      "name": "Add product to wishlist",
+      "suite": "wishlist.spec.ts",
+      "status": "failed",
+      "durationMs": 8200,
+      "issueKeys": [
+        "PROJ-7"
+      ],
+      "error": "Error: expect(locator).toHaveText(expected)\nLocator: getByTestId('wishlist-badge')\nExpected string: \"2\"\nReceived string: \"0\"\n    at tests/wishlist.spec.ts:19:52"
+    },
+    {
+      "id": "wishlist.spec.ts:Remove product from wishlist",
+      "name": "Remove product from wishlist",
+      "suite": "wishlist.spec.ts",
+      "status": "passed",
+      "durationMs": 7119,
+      "issueKeys": [
+        "PROJ-7"
+      ]
+    },
+    {
+      "id": "wishlist.spec.ts:Wishlist requires login",
+      "name": "Wishlist requires login",
+      "suite": "wishlist.spec.ts",
+      "status": "passed",
+      "durationMs": 6038,
+      "issueKeys": [
+        "PROJ-7"
+      ]
+    },
+    {
+      "id": "wishlist.spec.ts:Move wishlist item to cart",
+      "name": "Move wishlist item to cart",
+      "suite": "wishlist.spec.ts",
+      "status": "passed",
+      "durationMs": 4957,
+      "issueKeys": [
+        "PROJ-7"
+      ]
+    },
+    {
+      "id": "wishlist.spec.ts:Share wishlist",
+      "name": "Share wishlist",
+      "suite": "wishlist.spec.ts",
+      "status": "passed",
+      "durationMs": 3876,
+      "issueKeys": [
+        "PROJ-7"
+      ]
+    },
+    {
+      "id": "smoke.spec.ts:Home page loads",
+      "name": "Home page loads",
+      "suite": "smoke.spec.ts",
+      "status": "passed",
+      "durationMs": 2795,
+      "issueKeys": []
+    },
+    {
+      "id": "smoke.spec.ts:Footer links work",
+      "name": "Footer links work",
+      "suite": "smoke.spec.ts",
+      "status": "passed",
+      "durationMs": 1714,
+      "issueKeys": []
+    },
+    {
+      "id": "smoke.spec.ts:Cookie banner can be dismissed",
+      "name": "Cookie banner can be dismissed",
+      "suite": "smoke.spec.ts",
+      "status": "passed",
+      "durationMs": 9633,
+      "issueKeys": []
+    },
+    {
+      "id": "smoke.spec.ts:Robots.txt is served",
+      "name": "Robots.txt is served",
+      "suite": "smoke.spec.ts",
+      "status": "passed",
+      "durationMs": 8552,
+      "issueKeys": []
+    },
+    {
+      "id": "smoke.spec.ts:Newsletter sign-up",
+      "name": "Newsletter sign-up",
+      "suite": "smoke.spec.ts",
+      "status": "passed",
+      "durationMs": 7471,
+      "issueKeys": []
+    }
+  ]
+}

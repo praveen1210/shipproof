@@ -1,0 +1,327 @@
+app:
+  id: ari:cloud:ecosystem::app/40a5ae25-ce42-4d46-8341-16fb695eb862
+  runtime:
+    name: nodejs24.x
+  rovo:
+    tag: shipprof
+    description: CI failure triage and noise-free release readiness for Jira test evidence
+    keywords:
+      - testing
+      - ci
+      - release
+  storage:
+    entities:
+      - name: run
+        attributes:
+          projectKey:
+            type: string
+          startedAt:
+            type: integer
+          status:
+            type: string
+          data:
+            type: any
+        indexes:
+          - name: by-project-started
+            partition:
+              - projectKey
+            range:
+              - startedAt
+      - name: cluster
+        attributes:
+          projectKey:
+            type: string
+          category:
+            type: string
+          lastSeen:
+            type: integer
+          data:
+            type: any
+        indexes:
+          - name: by-project-lastseen
+            partition:
+              - projectKey
+            range:
+              - lastSeen
+          - name: by-project-category
+            partition:
+              - projectKey
+              - category
+            range:
+              - lastSeen
+
+modules:
+  webtrigger:
+    - key: ingest
+      function: ingest-fn
+      urlFormat: v2
+      # Static responses only: keeps ShipProof eligible for Runs on Atlassian.
+      # Keys and status codes must match OUTPUTS in src/ingest/core.ts (tested).
+      response:
+        type: static
+        outputs:
+          - key: accepted
+            statusCode: 202
+            contentType: application/json
+            body: '{"status":"accepted","message":"Run part accepted. Triage runs asynchronously, usually within 30 seconds."}'
+          - key: invalid-json
+            statusCode: 400
+            contentType: application/json
+            body: '{"status":"rejected","error":"Body is not valid JSON."}'
+          - key: invalid-schema
+            statusCode: 400
+            contentType: application/json
+            body: '{"status":"rejected","error":"Payload does not match the ShipProof ingest schema (schemaVersion 1). Use ci/shipproof-upload.mjs or see ci/README.md. Details are in the app logs."}'
+          - key: unauthorized
+            statusCode: 401
+            contentType: application/json
+            body: '{"status":"rejected","error":"Missing or invalid X-ShipProof-Token."}'
+          - key: method-not-allowed
+            statusCode: 405
+            contentType: application/json
+            body: '{"status":"rejected","error":"Use POST."}'
+          - key: too-large
+            statusCode: 413
+            contentType: application/json
+            body: '{"status":"rejected","error":"Payload over 200 KB. Split it into parts (the uploader does this)."}'
+          - key: server-error
+            statusCode: 500
+            contentType: application/json
+            body: '{"status":"error","error":"ShipProof could not accept the run. Retry later."}'
+
+  consumer:
+    - key: triage-consumer
+      queue: triage-queue
+      function: triage-fn
+
+  scheduledTrigger:
+    - key: purge
+      function: purge-fn
+      interval: day
+
+  jira:issuePanel:
+    - key: sp-panel
+      resource: panel
+      resolver:
+        function: resolver-fn
+      render: native
+      title: ShipProof
+      icon: resource:static;icon.svg
+
+  jira:projectPage:
+    - key: sp-project
+      resource: project
+      resolver:
+        function: resolver-fn
+      render: native
+      title: ShipProof
+
+  jira:adminPage:
+    - key: sp-settings
+      resource: settings
+      resolver:
+        function: resolver-fn
+      render: native
+      title: ShipProof settings
+
+  rovo:agent:
+    - key: sp-agent
+      name: ShipProof Triage Agent
+      description: Explains CI test failures (product defect, test maintenance,
+        environment, flaky) and answers "can we ship?" from grounded evidence.
+      icon: resource:static;icon.svg
+      prompt: resource:prompts;agent.md
+      conversationStarters:
+        - Why did last night's run fail?
+        - Can we ship 2.4.0?
+        - What's failing for this issue?
+        - Which acceptance criteria of this issue have no tests?
+      actions:
+        - get-latest-triage
+        - get-issue-evidence
+        - get-release-readiness
+        - list-failure-clusters
+        - get-issue-context
+        - create-bug-from-cluster
+        - add-issue-comment
+
+  # Read-only actions only: writes are deliberately not exposed to external MCP clients.
+  rovo:mcp:
+    - key: sp-mcp
+      name: ShipProof
+      tools:
+        - get-latest-triage
+        - get-issue-evidence
+        - get-release-readiness
+        - list-failure-clusters
+        - get-issue-context
+
+  action:
+    - key: get-latest-triage
+      name: Get latest triage
+      function: act-latest-triage
+      actionVerb: GET
+      description: Failure clusters of the latest (or a given) CI run for a Jira
+        project, grouped by category (product defect, test maintenance,
+        environment, flaky, unclassified) with counts, rule ids, linked bugs and
+        affected issue keys.
+      inputs:
+        projectKey:
+          title: Project key
+          type: string
+          required: true
+          description: Jira project key, e.g. PROJ
+        runId:
+          title: Run id
+          type: string
+          required: false
+          description: A specific run id; omit for the latest triaged run
+    - key: get-issue-evidence
+      name: Get issue test evidence
+      function: act-issue-evidence
+      actionVerb: GET
+      description: Test scenarios mapped to a Jira issue with their latest result,
+        failure category, rule id, last-10-run history, duration, build link and
+        linked bugs.
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+          description: Jira issue key, e.g. PROJ-12
+    - key: get-release-readiness
+      name: Get release readiness
+      function: act-release-ready
+      actionVerb: GET
+      description: Readiness score (product risk, 0-100), evidence confidence
+        (0-100%), verdict and every deduction with issue keys for a Jira fix
+        version.
+      inputs:
+        projectKey:
+          title: Project key
+          type: string
+          required: true
+          description: Jira project key
+        fixVersion:
+          title: Fix version
+          type: string
+          required: true
+          description: Version name, e.g. 2.4.0
+    - key: list-failure-clusters
+      name: List failure clusters
+      function: act-list-clusters
+      actionVerb: GET
+      description: Failure clusters (one per error signature) seen in the last N days,
+        optionally filtered by category.
+      inputs:
+        projectKey:
+          title: Project key
+          type: string
+          required: true
+          description: Jira project key
+        category:
+          title: Category
+          type: string
+          required: false
+          description: product, maintenance, environment, flaky or unclassified
+        sinceDays:
+          title: Since days
+          type: integer
+          required: false
+          description: Look-back window in days (default 7, max 90)
+    - key: get-issue-context
+      name: Get issue context
+      function: act-issue-context
+      actionVerb: GET
+      description: Issue summary, acceptance criteria extracted from the description,
+        mapped test scenarios and a lexical AC-to-scenario coverage first pass.
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+          description: Jira issue key, e.g. PROJ-20
+    - key: create-bug-from-cluster
+      name: Create bug from failure cluster
+      function: act-create-bug
+      actionVerb: CREATE
+      description: Creates a Jira Bug with the cluster's evidence (step, error,
+        frequency, builds, stories), labels it with the signature and links it
+        to the stories, or links an existing bug with that label. Only after
+        the user confirms.
+      inputs:
+        projectKey:
+          title: Project key
+          type: string
+          required: true
+          description: Jira project key
+        signature:
+          title: Signature
+          type: string
+          required: true
+          description: Cluster signature, e.g. 7f3a9c or sp-sig-7f3a9c
+    - key: add-issue-comment
+      name: Add issue comment
+      function: act-add-comment
+      actionVerb: CREATE
+      description: Adds a Markdown comment (e.g. drafted Gherkin scenarios or a
+        release summary) to a Jira issue. Only after the user confirms the exact
+        text.
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+          description: Jira issue key
+        body:
+          title: Comment body
+          type: string
+          required: true
+          description: Markdown text of the comment
+
+  function:
+    - key: ingest-fn
+      handler: index.ingest
+    - key: triage-fn
+      handler: index.triage
+      timeoutSeconds: 300
+    - key: purge-fn
+      handler: index.purge
+      timeoutSeconds: 600
+    - key: resolver-fn
+      handler: index.resolver
+    - key: act-latest-triage
+      handler: index.getLatestTriage
+    - key: act-issue-evidence
+      handler: index.getIssueEvidence
+    - key: act-release-ready
+      handler: index.getReleaseReadiness
+    - key: act-list-clusters
+      handler: index.listFailureClusters
+    - key: act-issue-context
+      handler: index.getIssueContext
+    - key: act-create-bug
+      handler: index.createBugFromCluster
+    - key: act-add-comment
+      handler: index.addIssueComment
+
+resources:
+  - key: panel
+    path: src/frontend/panel.tsx
+  - key: project
+    path: src/frontend/project.tsx
+  - key: settings
+    path: src/frontend/settings.tsx
+  - key: prompts
+    path: prompts
+  - key: static
+    path: static
+
+permissions:
+  scopes:
+    - read:jira-work
+    - write:jira-work
+    - read:jira-user
+    - manage:jira-project # demo workspace creates/deletes its fix version
+    - storage:app
+    # + the Teamwork Graph scope from the TWG docs once the Phase 0 spike confirms access (F12)

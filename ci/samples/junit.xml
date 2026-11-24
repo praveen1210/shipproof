@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="com.acme.api.OrdersApiTest" tests="4" failures="2" errors="0" skipped="1" time="6.2">
+    <properties>
+      <property name="issue" value="PROJ-18"/>
+    </properties>
+    <testcase name="createOrderReturns201" classname="com.acme.api.OrdersApiTest" time="1.2"/>
+    <testcase name="getOrderStatus" classname="com.acme.api.OrdersApiTest" time="3.1">
+      <failure message="1 expectation failed.&#10;Expected status code &lt;200&gt; but was &lt;503&gt;." type="java.lang.AssertionError">java.lang.AssertionError: 1 expectation failed.
+Expected status code &lt;200&gt; but was &lt;503&gt;.
+	at io.restassured.internal.ValidatableResponseImpl.statusCode(ValidatableResponseImpl.groovy:89)
+	at com.acme.api.OrdersApiTest.getOrderStatus(OrdersApiTest.java:42)</failure>
+    </testcase>
+    <testcase name="[PROJ-20] refundIsIssued" classname="com.acme.api.OrdersApiTest" time="1.9">
+      <properties><property name="issue" value="PROJ-20"/></properties>
+      <failure message="expected: &lt;250.0&gt; but was: &lt;0.0&gt;" type="org.opentest4j.AssertionFailedError">org.opentest4j.AssertionFailedError: expected: &lt;250.0&gt; but was: &lt;0.0&gt;
+	at com.acme.api.OrdersApiTest.refundIsIssued(OrdersApiTest.java:77)</failure>
+    </testcase>
+    <testcase name="cancelOrder" classname="com.acme.api.OrdersApiTest" time="0"><skipped/></testcase>
+  </testsuite>
+</testsuites>
