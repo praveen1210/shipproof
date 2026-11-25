@@ -8,9 +8,10 @@ import { CATEGORY_EMOJI, CATEGORY_LABEL, categoryText, effectiveCategory } from 
 import { buildIssueEvidence, latestState, type IssueEvidence } from './evidence';
 import { evaluateRelease, type ReleaseEvaluation } from './readiness';
 import { extractAcceptanceCriteria, matchCoverage } from './acParser';
-import { renderReleaseReport } from './report';
+import { currentFailures, renderReleaseReport } from './report';
 import { bugDescriptionMarkdown, bugSummary, exactDedupeJql, maintenanceTaskSummary, suggestDedupeJql } from './dedupe';
 import { signatureLabel } from './triage/signature';
+import { failureTitle } from './triage/normalise';
 import * as jira from './jira';
 import type { Requester } from './jira';
 import { adfDoc } from './adf';
@@ -35,6 +36,8 @@ function assertIssueKey(k: unknown): string {
 export interface ClusterView {
   signature: string;
   label: string;
+  /** Human title: failing step, specific exception, or the error's headline. */
+  title: string;
   category: Category;
   flaky: boolean;
   categoryText: string;
@@ -60,6 +63,7 @@ export function toView(c: Cluster, countInRun?: number): ClusterView {
   return {
     signature: c.signature,
     label: signatureLabel(c.signature),
+    title: failureTitle(c),
     category: cat,
     flaky: c.flaky,
     categoryText: categoryText(cat, c.flaky),
@@ -259,11 +263,12 @@ export async function getReleaseReadiness(req: Requester, projectKeyIn: string, 
 
 export async function buildReleaseReport(req: Requester, projectKey: string, fixVersion: string, cloudId?: string) {
   const evaluation = await getReleaseReadiness(req, projectKey, fixVersion, cloudId);
-  const keys = new Set(Object.keys(evaluation.summaries));
-  const clusters = (await repo.listClusters(evaluation.projectKey, Date.now() - 14 * 86_400_000)).filter(
-    (c) => c.issueKeys.some((k) => keys.has(k)) && Object.keys(c.runCounts).length > 0 && c.count > 0,
-  );
-  const markdown = renderReleaseReport({ evaluation, clusters, summaries: evaluation.summaries, generatedAt: Date.now() });
+  const settings = await repo.getSettings();
+  // Only what is failing NOW on the release's issues: a cluster that passed on the last run is history.
+  const evidence = await repo.getManyIssueResults(Object.keys(evaluation.summaries));
+  const currentCounts = currentFailures(evidence, Date.now(), settings.staleHours);
+  const clusters = Object.values(await repo.getClusters(evaluation.projectKey, Object.keys(currentCounts)));
+  const markdown = renderReleaseReport({ evaluation, clusters, currentCounts, summaries: evaluation.summaries, generatedAt: Date.now() });
   return { markdown, evaluation, fileName: `shipproof-${evaluation.projectKey}-${evaluation.fixVersion}.md` };
 }
 

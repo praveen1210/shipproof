@@ -19,7 +19,7 @@ Every automation team starts the day the same way: the nightly run is red and so
 
 | | |
 |---|---|
-| Unit, contract, pipeline and manifest tests | **104 passing** (`npm test`) |
+| Unit, contract, pipeline and manifest tests | **109 passing** (`npm test`) |
 | Coverage of `src/services` + `src/ingest` | **97.9 % lines** (gate: 90 %) |
 | Classifier, labelled corpus (153 real-world messages: Selenium, Playwright, Cypress, RestAssured, JUnit/TestNG/AssertJ/Hamcrest, Jest/Mocha, Cucumber, CI infra) | **100 %** (gate: 90 %). The rules were tuned on this set, so treat it as a regression gate, not a real-world estimate. |
 | Classifier, **hold-out** set (32 messages written after tuning, never used to tune) | **75 % correct, 0 % wrong**: every miss falls into ❓ Unclassified (pytest, Karate, WebdriverIO phrasings), none into a wrong category. |
@@ -29,11 +29,11 @@ Every automation team starts the day the same way: the nightly run is red and so
 
 1. Install ShipProof from the installation link on your Jira Cloud site.
 2. Jira → **Settings → Apps → ShipProof settings** → *Demo workspace* → pick an (ideally empty) project → **Load demo workspace**. It creates 8 stories, 2 bugs and fix version **2.4.0** as you, then ingests 5 nightly runs through the same queue CI uses. Wait for "Runs triaged: 5/5" (~30 s).
-3. Open the project → **ShipProof** (project page):
-   - **Triage board**: 24 failures → 6 clusters. The checkout 🐞 cluster is already linked to the demo bug through its signature label; the wishlist 🐞 cluster is untracked → **Create bug**.
+3. Open the project. Jira doesn't add app pages to a project's tabs by itself: click **+** at the end of the project's tabs → **Apps → ShipProof → Add to navigation** (once per project). Then open the **ShipProof** tab:
+   - **Triage board**: 24 failures → 6 clusters. The checkout 🐞 cluster is already linked to the demo bug through its signature label; the wishlist 🐞 cluster is untracked → **Create bug** (evidence-filled bug, linked to the story). Maintenance clusters offer **Create task**; any cluster can be **reclassified**, and future failures with that signature inherit it.
    - **Release readiness** → 2.4.0: readiness 82, confidence 57 % → *At risk – low evidence confidence*. Every deduction is listed with its issues. *Show Markdown report* / *Post to release issue*.
-4. Open the checkout story: the **ShipProof issue panel** shows "Failing – product defect", the category per scenario, a 10-run history strip, durations, build links and the linked bug. Open the gift-card story: "No test evidence".
-5. Back in settings → **Ingest rerun (environment fixed)** → Recalculate 2.4.0: confidence 78 % → **Ready**. *This is the point: the release didn't change, the trust in its evidence did.*
+4. Open the checkout story and click the apps icon under its title → **ShipProof** to add the issue panel. It shows "Failing – product defect", the category per scenario, a 10-run history strip, durations, build links and the linked bug. Open the gift-card story: "No test evidence".
+5. Back in settings → **Ingest rerun (environment fixed)** → reopen Release readiness for 2.4.0: confidence 78 % → **Ready**. *This is the point: the release didn't change, the trust in its evidence did.*
 6. Rovo chat → **ShipProof Triage Agent** → "Why did last night's run fail?", "Can we ship 2.4.0?", "Which acceptance criteria of <gift-card key> have no tests?", "Draft Gherkin for it" → confirm → posted as a comment.
 7. **Remove demo workspace** deletes everything it created (after confirmation).
 
@@ -85,7 +85,7 @@ CI (Jenkins / ADO / GH Actions)
 
 ```bash
 npm install
-npm test            # vitest: 104 tests incl. classifier corpus gate
+npm test            # vitest: 109 tests incl. classifier corpus gate
 npm run typecheck
 npm run demo:generate PROJ   # demo/runs/*.json for curl / uploader tests
 
@@ -98,10 +98,12 @@ forge install --site <your-site>.atlassian.net --product jira
 
 Use a Forge demo site (`forge site provision`): it includes Rovo. Details and phase plan: [docs/PRD.md](docs/PRD.md). Agent evaluation script: [docs/agent-eval.md](docs/agent-eval.md). Bonus write-ups: [docs/bonus-writeups.md](docs/bonus-writeups.md).
 
-## Status / not yet verified on a live site
+## Status
 
-Built and tested locally; **not yet deployed**. Items that need a real Forge site to confirm:
-- `forge lint` / deploy of the manifest (custom entities, `rovo:mcp`, `app.rovo` block).
+**Verified on a live Jira Cloud site** (development environment, Nov 2026): `forge lint` clean; deployed; `forge eligibility` → **eligible for Runs on Atlassian**; demo workspace load (5 runs triaged through the real queue); triage board (24 → 6 clusters, automatic link to the labelled demo bug); Create bug and Create task (labelled, linked, evidence-filled); reclassify and undo (readiness 82 → 65 → 82); issue panel; release readiness 82 / 57 % *At risk* → rerun → 82 / 78 % **Ready**; Markdown report and posting it as a Jira comment; Rovo agent ("Can we ship 2.4.0?", AC coverage, Gherkin draft that asks before posting).
+
+Not verified yet:
+- MCP from an external client (needs a site admin to enable exposure), the CI uploader against the live web trigger with a real token, and the daily purge.
 - Teamwork Graph (F12): `src/services/twg.ts` is wired into readiness but **off by default** (`twgEnabled`). The persisted-query name and TWG scope must be confirmed in the Phase 0 spike; if access isn't available the factor is simply absent.
 - The report is shown as Markdown (copy from the code block) and posted as a comment; UI Kit has no file-download API, so "Download .md" is copy-to-clipboard.
-- E2E (Playwright + `forge tunnel`) and the 15-prompt agent eval are scripted in docs but not run yet.
+- E2E (Playwright + `forge tunnel`) is not written yet; the 15-prompt agent eval (docs/agent-eval.md) has been run only partially.

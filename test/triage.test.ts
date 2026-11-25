@@ -257,3 +257,26 @@ describe('mergeCluster', () => {
     expect(c.count).toBe(60);
   });
 });
+
+describe('readable failure titles (live-site finding: bare "Error" / "AssertionError" titles)', () => {
+  it('picks the most informative line of a failure message', async () => {
+    const { errorHeadline, failureTitle } = await import('../src/services/triage/normalise');
+    expect(errorHeadline('java.lang.AssertionError: 1 expectation failed.\nExpected status code <200> but was <503>.\n\tat x.y(Z.java:1)')).toBe(
+      'Expected status code <200> but was <503>.',
+    );
+    expect(errorHeadline('org.opentest4j.AssertionFailedError: expected: <A> but was: <B>')).toBe('expected: <A> but was: <B>');
+    expect(errorHeadline('Error: expect(locator).toHaveText(expected)\nLocator: x')).toBe('expect(locator).toHaveText(expected)');
+    expect(errorHeadline('AssertionError [ERR_ASSERTION]: values differ')).toBe('values differ');
+    expect(errorHeadline('locator.click: Timeout 30000ms exceeded.\nCall log:')).toBe('locator.click: Timeout 30000ms exceeded.');
+    expect(errorHeadline(undefined)).toBe('');
+    expect(errorHeadline('Error:\n    at a (b.js:1:1)')).toBe('');
+
+    expect(failureTitle({ failedStep: 'When I pay', exceptionType: 'Error', sampleError: 'x' })).toBe('When I pay');
+    expect(failureTitle({ exceptionType: 'NoSuchElementException', sampleError: 'x' })).toBe('NoSuchElementException');
+    expect(failureTitle({ exceptionType: 'AssertionError', sampleError: 'java.lang.AssertionError: 1 expectation failed.\nExpected status code <200> but was <503>.' })).toBe(
+      'Expected status code <200> but was <503>.',
+    );
+    expect(failureTitle({ exceptionType: 'Error', sampleError: '' })).toBe('Error');
+    expect(failureTitle({})).toBe('Test failure');
+  });
+});

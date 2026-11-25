@@ -1,12 +1,31 @@
 import type { ReleaseEvaluation } from './readiness';
-import type { Category, Cluster } from './types';
+import type { Category, Cluster, IssueResults } from './types';
 import { CATEGORY_EMOJI, CATEGORY_LABEL, effectiveCategory } from './types';
 import { signatureLabel } from './triage/signature';
+import { failureTitle } from './triage/normalise';
+import { latestState } from './evidence';
+
+/**
+ * Signatures failing in the LATEST result of each scenario of the release's issues, with how many
+ * scenarios fail that way now. A cluster that passed on the last run is history, not current risk.
+ */
+export function currentFailures(evidence: Record<string, IssueResults | undefined>, now: number, staleHours: number): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const results of Object.values(evidence)) {
+    for (const s of Object.values(results ?? {})) {
+      const l = latestState(s, now, staleHours);
+      if (l?.status === 'failed' && l.signature) out[l.signature] = (out[l.signature] ?? 0) + 1;
+    }
+  }
+  return out;
+}
 
 export interface ReportInput {
   evaluation: ReleaseEvaluation;
-  /** Clusters currently affecting the release's issues. */
+  /** Clusters currently failing on the release's issues. */
   clusters: Cluster[];
+  /** signature → scenarios failing that way in the latest run (from currentFailures). */
+  currentCounts?: Record<string, number>;
   summaries?: Record<string, string>;
   generatedAt: number;
 }
@@ -14,7 +33,8 @@ export interface ReportInput {
 const VERDICT_EMOJI = { Ready: '✅', 'At risk': '⚠️', 'Not ready': '⛔' } as const;
 
 /** Release report (§6.8) as Markdown: download as .md or post (converted to ADF) as a comment. */
-export function renderReleaseReport({ evaluation: e, clusters, summaries = {}, generatedAt }: ReportInput): string {
+export function renderReleaseReport({ evaluation: e, clusters, currentCounts, summaries = {}, generatedAt }: ReportInput): string {
+  const now = (c: Cluster) => currentCounts?.[c.signature] ?? c.count;
   const name = (k: string) => (summaries[k] ? `${k} ${summaries[k]}` : k);
   const out: string[] = [
     `# ShipProof release report: ${e.projectKey} ${e.fixVersion}`,
@@ -33,24 +53,24 @@ export function renderReleaseReport({ evaluation: e, clusters, summaries = {}, g
     for (const f of e.factors) out.push(`| ${f.factor} (${f.count}) | −${f.points} | ${f.issueKeys.slice(0, 10).join(', ')}${f.issueKeys.length > 10 ? ' …' : ''} |`);
   }
 
-  out.push('', `## Triage summary`);
+  out.push('', `## Triage summary (failing now)`);
   const groups: (Category | 'flaky')[] = ['product', 'maintenance', 'environment', 'flaky', 'unclassified'];
   const key = (c: Cluster): Category | 'flaky' => (c.flaky ? 'flaky' : effectiveCategory(c));
-  out.push('| Category | Clusters | Failures |', '|---|---|---|');
+  out.push('| Category | Clusters | Failing scenarios |', '|---|---|---|');
   for (const g of groups) {
     const cs = clusters.filter((c) => key(c) === g);
-    out.push(`| ${CATEGORY_EMOJI[g]} ${CATEGORY_LABEL[g]} | ${cs.length} | ${cs.reduce((a, c) => a + c.count, 0)} |`);
+    out.push(`| ${CATEGORY_EMOJI[g]} ${CATEGORY_LABEL[g]} | ${cs.length} | ${cs.reduce((a, c) => a + now(c), 0)} |`);
   }
 
   const untracked = clusters.filter((c) => key(c) === 'product' && !c.bugKey);
   out.push('', `## Untracked product defects`);
   if (untracked.length === 0) out.push('None: every product-defect cluster is linked to a Jira bug.');
-  else for (const c of untracked) out.push(`- \`${signatureLabel(c.signature)}\` ${c.failedStep || c.exceptionType} (${c.count}×) → ${c.issueKeys.join(', ')}`);
+  else for (const c of untracked) out.push(`- \`${signatureLabel(c.signature)}\` ${failureTitle(c)} (${c.count}× since ${new Date(c.firstSeen).toISOString().slice(0, 10)}) → ${c.issueKeys.join(', ')}`);
 
   const tracked = clusters.filter((c) => key(c) === 'product' && c.bugKey);
   if (tracked.length) {
     out.push('', `## Tracked product defects`);
-    for (const c of tracked) out.push(`- ${c.bugKey}: ${c.failedStep || c.exceptionType} (${c.count}×)`);
+    for (const c of tracked) out.push(`- ${c.bugKey}: ${failureTitle(c)} (${c.count}×)`);
   }
 
   out.push('', `## Stories without test evidence`);

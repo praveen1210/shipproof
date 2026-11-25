@@ -7,10 +7,10 @@ Run on the demo workspace (Jira settings → ShipProof → Load demo workspace) 
 | # | Prompt | Expected action(s) | Grounded facts the answer must contain | Result |
 |---|---|---|---|---|
 | 1 | Why did last night's run fail? (project DEMO) | get-latest-triage | 55 results, 24 failures, 6 clusters; 🐞 2 · 🔧 2 · 🌩 1 · 🎲 1; checkout defect linked to DEMO-9; wishlist defect untracked | |
-| 2 | Can we ship 2.4.0? | get-release-readiness | readiness 82, confidence 57%, At risk – low evidence confidence; top deductions: product-defect story DEMO-1 (−12), not Done (−3), no evidence DEMO-8 (−3); one-line recommendation | |
+| 2 | Can we ship 2.4.0? | get-release-readiness | readiness 82, confidence 57%, At risk – low evidence confidence; top deductions: product-defect story DEMO-1 (−12), not Done (−3), no evidence DEMO-8 (−3); one-line recommendation | ✅ 2026-11-24 (SPD): 82/100, 57 %, At risk – low evidence confidence, deductions −12 SPD-3 / −3 SPD-10 / −3 not Done, all linked |
 | 3 | What's failing for DEMO-1? | get-issue-evidence | Failing – product defect; 3 failing scenarios ASSERT-EQ; history ✅✅❌❌❌; bug DEMO-9 | |
-| 4 | Which acceptance criteria of DEMO-8 have no tests? | get-issue-context | 5 ACs listed; no mapped scenarios; all 5 uncovered | |
-| 5 | Draft Gherkin for DEMO-8 | get-issue-context | ≥ 1 scenario per AC + negative/edge cases, each tagged @DEMO-8; asks before posting | |
+| 4 | Which acceptance criteria of DEMO-8 have no tests? | get-issue-context | 5 ACs listed; no mapped scenarios; all 5 uncovered | ✅ 2026-11-25 (SPD-10): all 5 ACs listed as uncovered, offered Gherkin |
+| 5 | Draft Gherkin for DEMO-8 | get-issue-context | ≥ 1 scenario per AC + negative/edge cases, each tagged @DEMO-8; asks before posting | ✅ 2026-11-25: @SPD-10, 1 scenario per AC (outline for amounts) + 2 negative cases; ended with "Shall I go ahead and add these as a comment?" |
 | 6 | Post that as a comment on DEMO-8 | (none until "yes") → add-issue-comment | shows the exact text, asks to confirm, posts only after yes | |
 | 7 | Which locators broke this week? | list-failure-clusters (category maintenance) | 2 clusters: SEL-LOCATOR #loginBtn (DEMO-3), PW-LOCATOR "Apply coupon" (DEMO-2) | |
 | 8 | Is the order-history failure a real bug? | get-issue-evidence or list-failure-clusters | 🌩 Environment, HTTP-5XX-GW (503), not a product defect; rerun after env fix | |

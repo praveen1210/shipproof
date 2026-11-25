@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { buildIssueEvidence, historyStrip, isTrusted, overallStatus } from '../src/services/evidence';
 import { adfToText, extractAcceptanceCriteria, matchCoverage, splitAcs } from '../src/services/acParser';
 import { adfDoc, inline, markdownToAdf } from '../src/services/adf';
-import { renderReleaseReport } from '../src/services/report';
+import { currentFailures, renderReleaseReport } from '../src/services/report';
 import { evaluateRelease } from '../src/services/readiness';
 import {
   bugDescriptionMarkdown,
@@ -193,8 +193,11 @@ describe('bug dedupe and creation (§6.4)', () => {
 
   it('writes an evidence-filled summary and description', () => {
     const c = cluster('7f3a9c');
-    expect(bugSummary(c)).toBe('[ShipProof] Then the order is placed – AssertionFailedError');
-    expect(bugSummary({ ...c, failedStep: '' })).toBe('[ShipProof] Pay with saved card – AssertionFailedError');
+    // generic exception types are replaced by the message itself (live-site finding: "– Error")
+    expect(bugSummary(c)).toBe('[ShipProof] Then the order is placed – expected: <Order Placed> but was: <Payment Failed>');
+    expect(bugSummary({ ...c, failedStep: '' })).toBe('[ShipProof] Pay with saved card – expected: <Order Placed> but was: <Payment Failed>');
+    expect(bugSummary({ ...c, exceptionType: 'NoSuchElementException' })).toBe('[ShipProof] Then the order is placed – NoSuchElementException');
+    expect(bugSummary({ ...c, exceptionType: 'Error', sampleError: '' })).toBe('[ShipProof] Then the order is placed – Error');
     expect(maintenanceTaskSummary({ ...c, ruleId: 'SEL-LOCATOR' })).toContain('Test maintenance: SEL-LOCATOR');
     const md = bugDescriptionMarkdown(c);
     for (const s of ['sp-sig-7f3a9c', 'Then the order is placed', 'Payment Failed', '| 7 | 2 |', 'staging', 'https://ci/1287', 'PROJ-12']) expect(md).toContain(s);
@@ -223,11 +226,28 @@ describe('release report (§6.8)', () => {
     expect(md).toContain('# ShipProof release report: PROJ 2.4.0');
     expect(md).toContain(`**${evaluation.readiness}/100**`);
     expect(md).toContain('Stories failing with a product defect (1) | −12 | PROJ-12');
-    expect(md).toContain('| 🐞 Product defect | 2 | 14 |');
-    expect(md).toContain('`sp-sig-p1` Then the order is placed (7×) → PROJ-12');
+    expect(md).toContain('## Triage summary (failing now)');
+    expect(md).toContain('| 🐞 Product defect | 2 | 14 |'); // no currentCounts given: falls back to totals
+    expect(md).toContain('`sp-sig-p1` Then the order is placed (7× since 1970-01-01) → PROJ-12');
     expect(md).toContain('PROJ-41: Then the order is placed');
     expect(md).toContain('- PROJ-20 Refunds');
     expect(md).not.toContain('Low-confidence evidence'); // the only evidenced story is a trusted product failure
+  });
+
+  it('counts only failures that are current (live-site finding: fixed env/flaky clusters were still listed)', () => {
+    const evidence: Record<string, IssueResults> = {
+      'PROJ-1': {
+        a: { name: 'a', history: [e('failed', 1, { signature: 'env1' }), e('passed', NOW)] }, // fixed by the rerun
+        b: { name: 'b', history: [e('failed', NOW, { signature: 'p1' })] },
+        c: { name: 'c', history: [e('failed', NOW, { signature: 'p1' })] },
+      },
+      'PROJ-2': { d: { name: 'd', history: [e('skipped', NOW)] } },
+    };
+    expect(currentFailures(evidence, NOW, 72)).toEqual({ p1: 2 });
+    const evaluation = evaluateRelease({ projectKey: 'PROJ', fixVersion: '1', issues: [], evidence: {}, clusters: {}, now: NOW });
+    const md = renderReleaseReport({ evaluation, clusters: [cluster('p1')], currentCounts: { p1: 2 }, generatedAt: 0 });
+    expect(md).toContain('| 🐞 Product defect | 1 | 2 |');
+    expect(md).toContain('| 🌩 Environment | 0 | 0 |');
   });
 
   it('says so when there is nothing to report', () => {

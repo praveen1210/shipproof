@@ -1,7 +1,7 @@
 import type { Cluster } from './types';
 import { CATEGORY_LABEL, effectiveCategory } from './types';
 import { signatureLabel } from './triage/signature';
-import { skeletonTokens } from './triage/normalise';
+import { errorHeadline, GENERIC_EXCEPTIONS, skeletonTokens } from './triage/normalise';
 
 /** Escapes a value for use inside a JQL double-quoted string. */
 export function jqlString(v: string): string {
@@ -39,9 +39,11 @@ export function suggestDedupeJql(projectKey: string, cluster: Pick<Cluster, 'exc
   return `project = ${jqlString(projectKey)} AND issuetype = Bug AND updated >= -90d AND ${text} ORDER BY updated DESC`;
 }
 
-export function bugSummary(cluster: Pick<Cluster, 'failedStep' | 'exceptionType' | 'scenarioIds'>): string {
+export function bugSummary(cluster: Pick<Cluster, 'failedStep' | 'exceptionType' | 'scenarioIds'> & { sampleError?: string }): string {
   const step = cluster.failedStep || cluster.scenarioIds[0]?.split(':').slice(1).join(':') || 'Test failure';
-  return `[ShipProof] ${step} – ${cluster.exceptionType}`.slice(0, 254);
+  // "Error" / "AssertionError" say nothing: use the message itself instead.
+  const detail = GENERIC_EXCEPTIONS.has(cluster.exceptionType) ? errorHeadline(cluster.sampleError, 120) || cluster.exceptionType : cluster.exceptionType;
+  return `[ShipProof] ${step} – ${detail}`.slice(0, 254);
 }
 
 export function maintenanceTaskSummary(cluster: Pick<Cluster, 'failedStep' | 'ruleId' | 'scenarioIds'>): string {

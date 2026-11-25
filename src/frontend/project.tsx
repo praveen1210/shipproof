@@ -64,13 +64,6 @@ interface RunItem {
 
 type Readiness = ReleaseEvaluation & { twg: 'on' | 'off' | 'unavailable'; summaries: Record<string, string> };
 
-/** Failing step, else the exception type, else the first line of the error (never a bare "Error"). */
-function failureTitle(c: ClusterView): string {
-  if (c.failedStep) return c.failedStep;
-  if (c.exceptionType && c.exceptionType !== 'Error') return c.exceptionType;
-  return c.sampleError.split('\n')[0].replace(/^Error:\s*/, '').slice(0, 120) || 'Test failure';
-}
-
 const card = xcss({ padding: 'space.200', borderRadius: 'radius.medium', backgroundColor: 'color.background.neutral' });
 
 // ───────────────────────────── triage board ─────────────────────────────
@@ -226,7 +219,7 @@ function TriageBoard() {
                         <Text size="small">{c.label}</Text>
                         {c.overridden ? <Lozenge>reclassified</Lozenge> : null}
                       </Inline>
-                      <Text weight="medium">{failureTitle(c)}</Text>
+                      <Text weight="medium">{c.title}</Text>
                       <Text size="small">{c.sampleError.split('\n')[0].slice(0, 180)}</Text>
                     </Stack>
                   ),
@@ -310,7 +303,8 @@ function TriageBoard() {
 
 const VERDICT_APPEARANCE = { Ready: 'success', 'At risk': 'moved', 'Not ready': 'removed' } as const;
 
-function ReadinessTab() {
+/** `refresh` changes every time the tab is opened, so the score never shows stale triage results. */
+function ReadinessTab({ refresh }: { refresh: number }) {
   const versions = useResolver<{ id: string; name: string; released: boolean }[]>('listVersions');
   const [version, setVersion] = useState<string | undefined>();
   const [result, setResult] = useState<Readiness | undefined>();
@@ -320,6 +314,7 @@ function ReadinessTab() {
   const [postOpen, setPostOpen] = useState(false);
   const [postKey, setPostKey] = useState('');
   const [posting, setPosting] = useState(false);
+  const [postError, setPostError] = useState<string | undefined>();
   const [flash, setFlash] = useState<{ appearance: 'success' | 'error'; text: string } | null>(null);
   const [nonce, setNonce] = useState(0);
 
@@ -336,7 +331,7 @@ function ReadinessTab() {
       .then(setResult)
       .catch((e) => setError((e as Error).message))
       .finally(() => setLoading(false));
-  }, [version, nonce]);
+  }, [version, nonce, refresh]);
 
   const showReport = async () => {
     try {
@@ -348,12 +343,14 @@ function ReadinessTab() {
 
   const post = async () => {
     setPosting(true);
+    setPostError(undefined);
     try {
       const res = await call<{ issueKey: string }>('postReport', { fixVersion: version, issueKey: postKey.trim().toUpperCase() || undefined });
       setFlash({ appearance: 'success', text: `Report posted as a comment on ${res.issueKey}.` });
       setPostOpen(false);
     } catch (e) {
-      setFlash({ appearance: 'error', text: (e as Error).message });
+      // shown inside the modal, which would otherwise hide it
+      setPostError((e as Error).message);
     } finally {
       setPosting(false);
     }
@@ -462,7 +459,10 @@ function ReadinessTab() {
           <Heading size="small">Report</Heading>
           <ButtonGroup>
             <Button onClick={() => void showReport()}>Show Markdown report</Button>
-            <Button appearance="primary" onClick={() => setPostOpen(true)}>Post to release issue</Button>
+            <Button appearance="primary" onClick={() => {
+              setPostError(undefined);
+              setPostOpen(true);
+            }}>Post to release issue</Button>
           </ButtonGroup>
           {report ? <CodeBlock language="markdown" text={report} showLineNumbers={false} /> : null}
         </Stack>
@@ -477,6 +477,11 @@ function ReadinessTab() {
             <ModalBody>
               <Stack space="space.100">
                 <Text>The readiness report for {version} is added as a comment. Leave the key empty to use the issue in this version labelled "shipproof-release" (or its epic).</Text>
+                {postError ? (
+                  <SectionMessage appearance="error">
+                    <Text>{postError}</Text>
+                  </SectionMessage>
+                ) : null}
                 <Textfield name="issue" placeholder="Issue key, e.g. PROJ-1" value={postKey} onChange={(e) => setPostKey(String(e.target.value ?? ''))} />
               </Stack>
             </ModalBody>
@@ -494,8 +499,9 @@ function ReadinessTab() {
 }
 
 function App() {
+  const [readinessVisits, setReadinessVisits] = useState(0);
   return (
-    <Tabs id="shipproof-tabs">
+    <Tabs id="shipproof-tabs" onChange={(index: number) => index === 1 && setReadinessVisits((n) => n + 1)}>
       <TabList>
         <Tab>Triage board</Tab>
         <Tab>Release readiness</Tab>
@@ -507,7 +513,7 @@ function App() {
       </TabPanel>
       <TabPanel>
         <Box xcss={xcss({ paddingBlock: 'space.200' })}>
-          <ReadinessTab />
+          <ReadinessTab refresh={readinessVisits} />
         </Box>
       </TabPanel>
     </Tabs>

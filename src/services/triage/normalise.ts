@@ -5,6 +5,35 @@
 
 const MAX_INPUT = 4000;
 
+const EXCEPTION_PREFIX = /^(?:[a-z_$][\w$]*\.)*(?:[A-Z][\w$]*)?(?:Error|Exception|Failure)(?: \[[A-Z_]+\])?:\s*/;
+const NOISE_LINE = /^(\d+ expectations? failed\.?|Call log:?|Error:?)$/i;
+
+/** Exception types that say nothing about which failure it is. */
+export const GENERIC_EXCEPTIONS = new Set(['Error', 'AssertionError', 'AssertionFailedError', 'Exception', 'RuntimeException', 'Failure', 'TimeoutError']);
+
+/**
+ * The most informative line of a failure message, for titles and bug summaries:
+ * "java.lang.AssertionError: 1 expectation failed.\nExpected status code <200> but was <503>."
+ * → "Expected status code <200> but was <503>."
+ */
+export function errorHeadline(raw: string | undefined, max = 160): string {
+  for (const line of (raw ?? '').slice(0, MAX_INPUT).replace(/\r/g, '').split('\n')) {
+    const l = line.trim();
+    if (!l || isStackFrame(l) || NOISE_LINE.test(l)) continue;
+    const msg = l.replace(EXCEPTION_PREFIX, '').trim();
+    if (!msg || NOISE_LINE.test(msg)) continue;
+    return msg.slice(0, max);
+  }
+  return '';
+}
+
+/** Board title / bug-summary detail: failing step, else a specific exception type, else the error headline. */
+export function failureTitle(c: { failedStep?: string; exceptionType?: string; sampleError?: string }): string {
+  if (c.failedStep) return c.failedStep;
+  if (c.exceptionType && !GENERIC_EXCEPTIONS.has(c.exceptionType)) return c.exceptionType;
+  return errorHeadline(c.sampleError) || c.exceptionType || 'Test failure';
+}
+
 /** First line that looks like an exception / error header, minus the stack. */
 export function headline(raw: string): string {
   const lines = raw
