@@ -79,7 +79,7 @@ CI (Jenkins / ADO / GH Actions)
 - **Readiness** (`src/services/readiness.ts`): starts at 100, capped deductions (High bugs −15, Medium bugs −5, stories with a product-defect failure −12, untracked product clusters −5, stories without evidence −3, open PRs via Teamwork Graph −2, reopened −2, not Done −1). **Confidence** = mean over stories of trusted/total scenarios, where trusted = latest result passed or failed as a product defect, and not flaky/environment/maintenance/skipped/stale (72 h).
 - **Runs on Atlassian:** the ingest web trigger is **static**: it can only return one of 7 fixed responses declared in the manifest (202/400/401/405/413/500), so nothing stored can leave through it. Validation details go to `forge logs`; the uploader computes the run id itself.
 - **Security:** hashed token, constant-time compare, rotate any time; zod validation; 200 KB limit; tokens and payloads are never logged; UI resolvers take issue/project keys from the module context, not the payload; settings and demo actions need the admin page **and** Jira admin permission; actions check the user's access before returning stored data; MCP is read-only.
-- **Privacy:** only test names, statuses, durations and truncated errors are stored; runs older than the retention (30 days) are purged daily; demo data is removable.
+- **Privacy:** no personal data is stored (no account IDs, names or emails); only test names, statuses, durations and truncated errors; runs older than the retention (30 days) are purged daily; demo data is removable. See [PRIVACY.md](PRIVACY.md) and [TERMS.md](TERMS.md).
 
 ## Develop
 

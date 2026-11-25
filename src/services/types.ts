@@ -166,7 +166,6 @@ export interface Settings {
   retentionDays: number;
   staleHours: number;
   excludedTypes: string[];
-  maintenanceAssignee?: string;
   customRules: CustomRuleConfig[];
   /** Teamwork Graph enrichment (F12). Off until the Phase 0 spike confirms API access. */
   twgEnabled: boolean;
@@ -184,7 +183,17 @@ export const DEFAULT_SETTINGS: Settings = {
 export function withDefaults(s: Partial<Settings> | undefined): Settings {
   return {
     ...DEFAULT_SETTINGS,
-    ...(s ?? {}),
+    ...withoutPersonalData(s ?? {}),
     weights: { ...DEFAULT_WEIGHTS, ...(s?.weights ?? {}) },
   };
+}
+
+/**
+ * ShipProof declares that it stores no personal data, so no Atlassian account IDs are kept in
+ * settings. Drops the removed `maintenanceAssignee` field if an older version stored one; the next
+ * settings save then removes it from storage too.
+ */
+function withoutPersonalData(s: Partial<Settings>): Partial<Settings> {
+  const { maintenanceAssignee: _removed, ...rest } = s as Partial<Settings> & { maintenanceAssignee?: string };
+  return rest;
 }

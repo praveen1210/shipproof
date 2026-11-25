@@ -148,7 +148,6 @@ resolver.define(
       retentionDays: num(p.retentionDays, 1, 365, current.retentionDays),
       staleHours: num(p.staleHours, 1, 24 * 30, current.staleHours),
       excludedTypes: (p.excludedTypes ?? current.excludedTypes).map((t) => String(t).trim()).filter(Boolean).slice(0, 20),
-      maintenanceAssignee: p.maintenanceAssignee === undefined ? current.maintenanceAssignee : p.maintenanceAssignee || undefined,
       customRules: rules,
       twgEnabled: p.twgEnabled === undefined ? current.twgEnabled : !!p.twgEnabled,
     };

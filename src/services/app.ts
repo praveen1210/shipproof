@@ -324,7 +324,6 @@ export async function createIssueFromCluster(req: Requester, projectKeyIn: strin
     summary: isTask ? maintenanceTaskSummary(cluster) : bugSummary(cluster),
     description: adfDoc(bugDescriptionMarkdown(cluster)),
     labels: [signatureLabel(cluster.signature), isTask ? 'shipproof-maintenance' : 'shipproof'],
-    ...(isTask && settings.maintenanceAssignee ? { assignee: { id: settings.maintenanceAssignee } } : {}),
   });
   const linked: string[] = [];
   for (const story of cluster.issueKeys.slice(0, 20)) {

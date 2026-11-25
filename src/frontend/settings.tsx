@@ -35,7 +35,6 @@ interface SettingsView {
   retentionDays: number;
   staleHours: number;
   excludedTypes: string[];
-  maintenanceAssignee?: string;
   customRules: CustomRuleConfig[];
   twgEnabled: boolean;
 }
@@ -245,7 +244,6 @@ function ScoringSection({ settings, onSaved, flash }: { settings: SettingsView; 
     staleHours: String(settings.staleHours),
     retentionDays: String(settings.retentionDays),
     excludedTypes: settings.excludedTypes.join(', '),
-    maintenanceAssignee: settings.maintenanceAssignee ?? '',
     twgEnabled: settings.twgEnabled,
     weights: Object.fromEntries(Object.entries(settings.weights).map(([k, v]) => [k, String(v)])) as Record<string, string>,
   });
@@ -257,7 +255,6 @@ function ScoringSection({ settings, onSaved, flash }: { settings: SettingsView; 
         staleHours: Number(form.staleHours),
         retentionDays: Number(form.retentionDays),
         excludedTypes: form.excludedTypes.split(',').map((s) => s.trim()).filter(Boolean),
-        maintenanceAssignee: form.maintenanceAssignee.trim(),
         twgEnabled: form.twgEnabled,
         weights: Object.fromEntries(Object.entries(form.weights).map(([k, v]) => [k, Number(v)])),
       });
@@ -269,7 +266,7 @@ function ScoringSection({ settings, onSaved, flash }: { settings: SettingsView; 
       setBusy(false);
     }
   };
-  const field = (key: 'staleHours' | 'retentionDays' | 'excludedTypes' | 'maintenanceAssignee', label: string, help?: string) => (
+  const field = (key: 'staleHours' | 'retentionDays' | 'excludedTypes', label: string, help?: string) => (
     <Box xcss={narrow}>
       <Label labelFor={key}>{label}</Label>
       <Textfield id={key} name={key} value={form[key]} onChange={(e) => setForm({ ...form, [key]: String(e.target.value ?? '') })} />
@@ -299,7 +296,6 @@ function ScoringSection({ settings, onSaved, flash }: { settings: SettingsView; 
           {field('staleHours', 'Stale after (hours)', 'Older results are not trusted evidence.')}
           {field('retentionDays', 'Keep runs for (days)', 'Purged daily.')}
           {field('excludedTypes', 'Issue types without tests', 'Not counted as stories, e.g. Spike.')}
-          {field('maintenanceAssignee', 'Test-maintenance assignee', 'Atlassian account ID (optional).')}
         </Inline>
         <Inline space="space.100" alignBlock="center">
           <Toggle id="twg" isChecked={form.twgEnabled} onChange={() => setForm({ ...form, twgEnabled: !form.twgEnabled })} />

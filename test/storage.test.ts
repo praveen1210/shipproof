@@ -14,3 +14,12 @@ describe('entity time attributes', () => {
     expect(Date.now()).toBeGreaterThan(2 ** 31 - 1); // ms would overflow
   });
 });
+
+describe('no personal data in settings', () => {
+  it('drops a maintenanceAssignee account ID stored by an older version', async () => {
+    const { withDefaults } = await import('../src/services/types');
+    const s = withDefaults({ staleHours: 24, maintenanceAssignee: '614d56b4ba1b34006ada1baf' } as never);
+    expect(s.staleHours).toBe(24);
+    expect('maintenanceAssignee' in s).toBe(false);
+  });
+});
