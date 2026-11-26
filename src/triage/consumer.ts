@@ -2,7 +2,7 @@ import api from '@forge/api';
 import { InvocationError, InvocationErrorCode, type AsyncEvent } from '@forge/events';
 import type { TriageJob } from '../ingest/core';
 import type { IngestResult } from '../services/types';
-import { triageRun, normalise, signature, unmappedKey } from '../services/triage';
+import { triageRun, normalise, signature, unmappedKey, latestSignatures } from '../services/triage';
 import { dedupeClusters } from '../services/app';
 import { JiraError } from '../services/jira';
 import * as repo from '../storage/repo';
@@ -39,10 +39,11 @@ export async function processRun(runId: string): Promise<{ status: string; runId
   const previousSignatures = run.summary?.clusters.map((c) => c.signature) ?? [];
   const newSigs = results.filter((r) => r.status === 'failed').map((r) => signature(normalise(r.error) || normalise(r.failedStep) || 'unknown failure', r.failedStep));
 
-  const [issueResults, clusters] = await Promise.all([
-    repo.getManyIssueResults(issueKeys),
-    repo.getClusters(run.projectKey, [...newSigs, ...previousSignatures]),
-  ]);
+  const issueResults = await repo.getManyIssueResults(issueKeys);
+  // Also load the clusters of these scenarios' latest results: if this run is older than what is
+  // already stored (the queue does not keep order), their flaky flags are recomputed too.
+  const scenarioIds = new Set(results.map((r) => r.id));
+  const clusters = await repo.getClusters(run.projectKey, [...newSigs, ...previousSignatures, ...latestSignatures(issueResults, scenarioIds)]);
 
   const out = triageRun({ run, results, issueResults, clusters, previousSignatures, customRules: settings.customRules });
 

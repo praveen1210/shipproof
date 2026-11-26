@@ -86,6 +86,14 @@ export function toView(c: Cluster, countInRun?: number): ClusterView {
 }
 
 type Group = Category | 'flaky';
+
+/** Failures per category from the clusters' current flags (a stored run summary can be stale
+ *  after an older run is triaged late and corrects flaky flags). */
+function currentByCategory(views: ClusterView[]): Record<Group, number> {
+  const out: Record<Group, number> = { product: 0, maintenance: 0, environment: 0, unclassified: 0, flaky: 0 };
+  for (const v of views) out[v.flaky ? 'flaky' : v.category] += v.countInRun ?? v.totalCount;
+  return out;
+}
 const GROUP_ORDER: Group[] = ['product', 'unclassified', 'maintenance', 'environment', 'flaky'];
 
 function groupClusters(views: ClusterView[]) {
@@ -145,7 +153,7 @@ export async function getLatestTriage(projectKeyIn: string, runId?: string) {
       status: run.status,
     },
     totals: summary
-      ? { total: summary.total, passed: summary.passed, failed: summary.failed, skipped: summary.skipped, unmapped: summary.unmapped, byCategory: summary.byCategory }
+      ? { total: summary.total, passed: summary.passed, failed: summary.failed, skipped: summary.skipped, unmapped: summary.unmapped, byCategory: currentByCategory(views) }
       : null,
     clusterCount: views.length,
     groups: groupClusters(views),

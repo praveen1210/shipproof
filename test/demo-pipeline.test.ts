@@ -84,3 +84,28 @@ describe('US-7 demo workspace through the real pipeline', () => {
     expect(e.verdict).toBe('Ready');
   });
 });
+
+describe('runs triaged out of order (live finding: the queue does not keep run order)', () => {
+  const inOrder = ingestAll([0, 1, 2, 3, 4]);
+  const orders = [
+    [4, 3, 2, 1, 0],
+    [4, 0, 1, 2, 3],
+    [2, 4, 0, 3, 1],
+  ];
+  const view = (s: ReturnType<typeof ingestAll>['state']) =>
+    Object.values(s.clusters)
+      .filter((c) => c.lastRunId === Object.values(inOrder.state.clusters).find((x) => x.signature === c.signature)?.lastRunId)
+      .map((c) => `${c.signature}:${c.flaky ? 'flaky' : c.category}:${c.count}`)
+      .sort();
+
+  it.each(orders)('order %j gives the same clusters, flaky flags and verdict as in-order triage', (...order) => {
+    const shuffled = ingestAll(order);
+    expect(view(shuffled.state)).toEqual(view(inOrder.state));
+    const flakyIn = Object.values(inOrder.state.clusters).filter((c) => c.flaky).map((c) => c.signature).sort();
+    const flakyOut = Object.values(shuffled.state.clusters).filter((c) => c.flaky).map((c) => c.signature).sort();
+    expect(flakyOut).toEqual(flakyIn);
+    const a = release(inOrder.state);
+    const b = release(shuffled.state);
+    expect([b.readiness, b.confidence, b.verdict]).toEqual([a.readiness, a.confidence, a.verdict]);
+  });
+});

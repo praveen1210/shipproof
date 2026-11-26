@@ -132,10 +132,13 @@ export function triageRun(input: TriageInput): TriageOutput {
       history.sort((a, b) => a.at - b.at);
       scen.history = history.slice(-HISTORY_LIMIT);
       if (failure) {
-        flaky = flaky || isFlakyFailure(scen.history);
         entry.category = failure.category;
         entry.signature = failure.signature;
       }
+      // Runs can be triaged out of order (the async queue does not keep order), so every failed
+      // entry's flaky flag is recomputed from the history before it, not only the new entry's.
+      recomputeFlaky(scen.history);
+      if (failure) flaky = flaky || !!entry.flaky;
       rec[res.id] = scen;
     }
 
@@ -172,9 +175,55 @@ export function triageRun(input: TriageInput): TriageOutput {
     if (!clusters[sig] && input.clusters[sig]) clusters[sig] = removeRun(input.clusters[sig], run.runId);
   }
 
+  // A cluster is flaky when most scenarios whose LATEST result carries its signature are flaky.
+  // Recomputed here so an older run arriving late corrects the newest run's clusters too.
+  for (const [sig, flags] of latestFlakyFlags(issueResults)) {
+    const c = clusters[sig] ?? input.clusters[sig];
+    if (!c) continue;
+    const flakyNow = flags.filter(Boolean).length * 2 >= flags.length;
+    if (c.flaky !== flakyNow || clusters[sig]) clusters[sig] = { ...c, flaky: flakyNow };
+  }
+  for (const ref of summary.clusters) ref.flaky = clusters[ref.signature]?.flaky ?? ref.flaky;
+
   summary.clusters.sort((a, b) => b.count - a.count);
   summary.issueKeys = Object.keys(issueResults).filter((k) => !isUnmappedKey(k));
   return { issueResults, clusters, summary };
+}
+
+/** Sets `flaky` on every failed entry from the history up to and including it (sorted oldest first). */
+export function recomputeFlaky(history: HistoryEntry[]): void {
+  history.forEach((h, i) => {
+    if (h.status === 'failed') h.flaky = isFlakyFailure(history.slice(0, i + 1));
+    else delete h.flaky;
+  });
+}
+
+/** signature → flaky flags of the scenarios whose latest result failed with that signature. */
+export function latestFlakyFlags(issueResults: Record<string, IssueResults>): Map<string, boolean[]> {
+  const out = new Map<string, boolean[]>();
+  for (const rec of Object.values(issueResults)) {
+    for (const scen of Object.values(rec)) {
+      const last = scen.history[scen.history.length - 1];
+      if (!last || last.status !== 'failed' || !last.signature) continue;
+      const list = out.get(last.signature) ?? [];
+      list.push(!!last.flaky);
+      out.set(last.signature, list);
+    }
+  }
+  return out;
+}
+
+/** Signatures of the latest results of the given scenarios: the consumer loads these clusters too. */
+export function latestSignatures(issueResults: Record<string, IssueResults>, scenarioIds: Set<string>): string[] {
+  const out = new Set<string>();
+  for (const rec of Object.values(issueResults)) {
+    for (const [id, scen] of Object.entries(rec)) {
+      if (!scenarioIds.has(id)) continue;
+      const sig = scen.history[scen.history.length - 1]?.signature;
+      if (sig) out.add(sig);
+    }
+  }
+  return [...out];
 }
 
 function unique(a: string[]): string[] {
