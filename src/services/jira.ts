@@ -179,3 +179,8 @@ export async function assertCanBrowseProject(req: Requester, projectKey: string)
   );
   if (!res.permissions?.BROWSE_PROJECTS?.havePermission) throw new JiraError(403, `You do not have access to project ${projectKey}`);
 }
+
+/** Removes all fix versions from an issue (used when a demo issue can't be deleted). */
+export async function clearFixVersions(req: Requester, key: string): Promise<void> {
+  await call(req, route`/rest/api/3/issue/${key}`, { method: 'PUT', body: { fields: { fixVersions: [] } } });
+}

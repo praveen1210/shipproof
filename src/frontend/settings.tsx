@@ -82,8 +82,15 @@ function DemoSection({ demo, projects, onChange, flash }: { demo: Demo | null; p
         const r = await call<{ issueKeys: string[]; runIds: string[] }>('loadDemo', { projectKey: target });
         flash({ appearance: 'success', text: `Demo workspace ready in ${target}: ${r.issueKeys.length} issues, fix version 2.4.0, ${r.runIds.length} nightly runs queued for triage. Open the project's ShipProof page in about 30 seconds.` });
       } else if (kind === 'remove') {
-        const r = await call<{ deletedIssues: number; deletedRuns: number }>('removeDemo');
-        flash({ appearance: 'success', text: `Demo removed: ${r.deletedIssues} issues, the demo version and ${r.deletedRuns} runs deleted.` });
+        const r = await call<{ deletedIssues: number; deletedRuns: number; keptIssues: string[]; versionDeleted: boolean }>('removeDemo');
+        if (r.keptIssues.length) {
+          flash({
+            appearance: 'information',
+            text: `ShipProof's demo data and ${r.deletedRuns} runs were removed${r.versionDeleted ? ', with the demo version' : ''}, and ${r.deletedIssues} issues were deleted. Jira did not allow deleting ${r.keptIssues.join(', ')} (you need the "Delete issues" project permission). They were taken out of the demo version: delete them in Jira, or keep them.`,
+          });
+        } else {
+          flash({ appearance: 'success', text: `Demo removed: ${r.deletedIssues} issues${r.versionDeleted ? ', the demo version' : ''} and ${r.deletedRuns} runs deleted.` });
+        }
       } else {
         await call('demoRerun');
         flash({ appearance: 'success', text: 'Rerun ingested: the staging environment is fixed in this run. Recalculate 2.4.0 on the Release readiness tab.' });

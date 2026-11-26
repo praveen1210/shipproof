@@ -122,20 +122,36 @@ async function ingestPayloads(payloads: IngestPayload[]): Promise<string[]> {
 }
 
 /** "Remove demo workspace": deletes demo issues, the version it created, and every stored run trace. */
-export async function removeDemo(req: Requester): Promise<{ deletedIssues: number; deletedRuns: number }> {
+export async function removeDemo(
+  req: Requester,
+): Promise<{ deletedIssues: number; deletedRuns: number; keptIssues: string[]; versionDeleted: boolean }> {
   const demo = await repo.getDemo();
-  if (!demo) return { deletedIssues: 0, deletedRuns: 0 };
+  if (!demo) return { deletedIssues: 0, deletedRuns: 0, keptIssues: [], versionDeleted: false };
 
+  // Live finding: on a new site the default permission scheme can deny "Delete issues" even to a
+  // site admin. Keep going: remove all of ShipProof's own data and report what Jira refused.
   let deletedIssues = 0;
+  const keptIssues: string[] = [];
   for (const key of demo.issueKeys) {
     try {
       await jira.deleteIssue(req, key);
       deletedIssues++;
     } catch (e) {
-      if (!(e instanceof jira.JiraError) || e.status !== 404) throw e;
+      if (!(e instanceof jira.JiraError)) throw e;
+      if (e.status === 403 || e.status === 401) keptIssues.push(key);
+      else if (e.status !== 404) throw e;
     }
   }
-  if (demo.versionId) await jira.deleteVersion(req, demo.versionId).catch(() => undefined);
+  // Issues Jira would not delete are detached from the demo version, so a later reload's
+  // release 2.4.0 contains only fresh demo issues.
+  for (const key of keptIssues) await jira.clearFixVersions(req, key).catch(() => undefined);
+  let versionDeleted = false;
+  if (demo.versionId) {
+    versionDeleted = await jira.deleteVersion(req, demo.versionId).then(
+      () => true,
+      () => false,
+    );
+  }
 
   const sigs = new Set<string>();
   for (const runId of demo.runIds) {
@@ -160,5 +176,5 @@ export async function removeDemo(req: Requester): Promise<{ deletedIssues: numbe
     else await repo.deleteIssueResults([uKey]);
   }
   await repo.deleteDemo();
-  return { deletedIssues, deletedRuns: demo.runIds.length };
+  return { deletedIssues, deletedRuns: demo.runIds.length, keptIssues, versionDeleted };
 }

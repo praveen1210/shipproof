@@ -35,7 +35,7 @@ Every automation team starts the day the same way: the nightly run is red and so
 4. Open the checkout story and click the apps icon under its title → **ShipProof** to add the issue panel. It shows "Failing – product defect", the category per scenario, a 10-run history strip, durations, build links and the linked bug. Open the gift-card story: "No test evidence".
 5. Back in settings → **Ingest rerun (environment fixed)** → reopen Release readiness for 2.4.0: confidence 78 % → **Ready**. *This is the point: the release didn't change, the trust in its evidence did.*
 6. Rovo chat → **ShipProof Triage Agent** → "Why did last night's run fail?", "Can we ship 2.4.0?", "Which acceptance criteria of <gift-card key> have no tests?", "Draft Gherkin for it" → confirm → posted as a comment.
-7. **Remove demo workspace** deletes everything it created (after confirmation).
+7. **Remove demo workspace** deletes everything it created (after confirmation). Deleting the issues needs the **Delete issues** project permission, which a new project's default scheme may not give even to a site admin. Without it, ShipProof still removes all of its own data, takes the issues out of the demo version, and lists the issues Jira kept so you can delete them yourself.
 
 If your project's create screen has no Priority field, the demo bug gets the default priority (usually Medium, −5) and readiness shows 77 → plain *At risk*.
 
